@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Verkaufsliste</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Gerät</th>
+      <th>Verkaufsdatum</th>
+      <th>Verkäufer</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for verkauf in verkauf_list %}
+    <tr>
+      <td>{{ verkauf.gerät }}</td>
+      <td>{{ verkauf.verkaufsdatum }}</td>
+      <td>{{ verkauf.verkäufer }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

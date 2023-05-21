@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<h1>Inventarliste</h1>
+
+<label for="auswahlGeraet">Choose a machine:</label>
+<select name="maschine" id="auswahlGeraet">
+  <option value="waschmaschine">Waschmaschine</option>
+  <option value="spuelmaschine">Spülmaschine</option>
+  <option value="kuehlschrank">Kühlschrank</option>
+  <option value="geraete">Geräte</option>
+</select>
+
+<div id="geraete-container" style="display: none">
+    <ul>
+    {% for gerät in geräte %}
+        <li>
+            <h2>{{ gerät.marke }}</h2>
+            <p>Preis: {{ gerät.preis }}</p>
+            <p>Anzahl: {{ gerät.anzahl }}</p>
+            <p><a href="{% url 'verkauf' gerät.id 'geraete'%}">Verkaufen</a></p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<div id="waschmaschine-container" style="display: none">
+    <ul>
+    {% for waschmaschin in waschmaschine %}
+        <li>
+            <h2>{{ waschmaschin.marke }}</h2>
+            <p>Preis: {{ waschmaschin.preis }}</p>
+            <p>Anzahl: {{ waschmaschin.anzahl }}</p>
+            <p><a href="{% url 'verkauf' waschmaschin.id 'waschmaschine'%}">Verkaufen</a></p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div id="spuelmaschine-container" style="display: none">
+    <ul>
+    {% for spuelmaschin in spuelmaschine %}
+        <li>
+            <h2>{{ spuelmaschin.marke }}</h2>
+            <p>Preis: {{ spuelmaschin.preis }}</p>
+            <p>Anzahl: {{ spuelmaschin.anzahl }}</p>
+            <p><a href="{% url 'verkauf' spuelmaschin.id 'spuelmaschine'%}">Verkaufen</a></p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div id="kuehlschrank-container" style="display: none">
+    <ul>
+    {% for kuehlschran in kuehlschrank %}
+        <li>
+            <h2>{{ kuehlschran.marke }}</h2>
+            <p>Preis: {{ kuehlschran.preis }}</p>
+            <p>Anzahl: {{ kuehlschran.anzahl }}</p>
+            <p><a href="{% url 'verkauf' kuehlschran.id 'kuehlschrank'%}">Verkaufen</a></p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+<script>
+  $("#auswahlGeraet").on('change', () => {
+    var x = $("#auswahlGeraet option:selected").text();
+    console.log(x)
+    if (x == 'Waschmaschine') {
+        console.log("wama");
+        $("#waschmaschine-container").show();
+        $("#spuelmaschine-container").hide();
+        $("#kuehlschrank-container").hide();
+        $("#geraete-container").hide();
+
+    } else if (x == 'Spülmaschine'){
+        $("#waschmaschine-container").hide();
+        $("#spuelmaschine-container").show();
+        $("#kuehlschrank-container").hide();
+        $("#geraete-container").hide();
+
+    } else if (x == 'Kühlschrank'){
+        $("#waschmaschine-container").hide();
+        $("#spuelmaschine-container").hide();
+        $("#kuehlschrank-container").show();
+        $("#geraete-container").hide();
+
+    } else if (x == 'Geräte'){
+        $("#waschmaschine-container").hide();
+        $("#spuelmaschine-container").hide();
+        $("#kuehlschrank-container").hide();
+        $("#geraete-container").show();
+
+    }
+  });
+</script>
+{% endblock %}
