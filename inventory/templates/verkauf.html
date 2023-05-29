@@ -7,6 +7,67 @@
     <label for="anzahl">Anzahl:</label>
     <input type="number" id="anzahl" name="anzahl" value="1" min="1" max="{{ gerät.anzahl }}">
     <br><br>
+
+    <label for="zahlungsart">Zahlungsart:</label>
+    <select id="zahlungsart" name="zahlungsart">
+      <option value="">Bitte auswählen</option>
+      <option value="Bar">Bar</option>
+      <option value="Überweisung">Überweisung</option>
+    </select>
+    <br>
+
+    <label for="verkaufsdatum">Verkaufsdatum:</label>
+    <input type="datetime-local" id="verkaufsdatum" name="verkaufsdatum" value="<?php echo date('Y-m-d\TH:i:s'); ?>">
+    <br>
+
+    <label for="marke">Marke:</label>
+    <input type="text" id="marke" name="marke">
+    <br>
+
+    <label for="seriennummer">Seriennummer:</label>
+    <input type="text" id="seriennummer" name="seriennummer">
+    <br>
+
+    <label for="artikelnummer">Artikelnummer:</label>
+    <input type="text" id="artikelnummer" name="artikelnummer">
+    <br>
+
+    <label for="preis">Preis:</label>
+    <input type="number" step="0.01" id="preis" name="preis">
+    <br>
+
+    <label for="beschreibung">Beschreibung:</label>
+    <textarea id="beschreibung" name="beschreibung"></textarea>
+    <br>
+
+    <label for="rechnungs_nr">Rechnungsnummer:</label>
+    <input type="number" id="rechnungs_nr" name="rechnungs_nr">
+    <br>
+
+    <label for="kunde_name">Kunde Name:</label>
+    <input type="text" id="kunde_name" name="kunde_name">
+    <br>
+
+    <label for="kunde_strasse">Kunde Straße:</label>
+    <input type="text" id="kunde_strasse" name="kunde_strasse">
+    <br>
+
+    <label for="kunde_plz">Kunde PLZ:</label>
+    <input type="text" id="kunde_plz" name="kunde_plz">
+    <br>
+
+    <label for="kunde_city">Kunde Stadt:</label>
+    <input type="text" id="kunde_city" name="kunde_city">
+    <br>
+
+    <label for="kunde_email">Kunde E-Mail:</label>
+    <input type="email" id="kunde_email" name="kunde_email">
+    <br>
+
+    <label for="kunde_mobile">Kunde Mobilnummer:</label>
+    <input type="text" id="kunde_mobile" name="kunde_mobile">
+    <br>
+
     <input type="submit" value="Verkaufen">
 </form>
 {% endblock %}

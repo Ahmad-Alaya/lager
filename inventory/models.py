@@ -5,6 +5,9 @@ JA_NEIN_CHOICES = [
     ('Ja','Ja'), ('Nein','Nein')
 ]
 
+ZAHLUNGSART_CHOICES = [
+    ('Bar','Bar'), ('Überweisung','Überweisung')
+]
 class BasicInformation(models.Model):
     marke = models.CharField(max_length=50)
     model = models.CharField(max_length=100)
@@ -96,11 +99,21 @@ class Verkauf(models.Model):
     waschmaschine = models.ForeignKey(Waschmaschine, on_delete=models.SET_NULL, null=True, blank=True)
     kuhlschrank = models.ForeignKey(Kuehlschrank, on_delete=models.SET_NULL, null=True, blank=True)
     spuelmaschine= models.ForeignKey(Spuelmaschine, on_delete=models.SET_NULL, null=True, blank= True)
-    verkaufsdatum = models.DateTimeField(auto_now_add=True)
     verkäufer = models.CharField(max_length=255)
+
+    zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
+    verkaufsdatum = models.DateTimeField(auto_now_add=True)
     marke = models.CharField(max_length=50, null=True, blank=True)
     seriennummer = models.CharField(max_length=50, null=True, blank=True)
     artikelnummer = models.CharField(max_length=50, null=True, blank=True)
     preis = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    beschreibung = models.TextField(max_length=500, null=True, blank=True)
+    rechnungs_nr = models.IntegerField(null=True, blank=True)
 
+    kunde_name = models.CharField(max_length=100, null=True, blank=True)
+    kunde_strasse = models.CharField(max_length=100, null=True, blank=True)
+    kunde_plz = models.CharField(max_length=100, null=True, blank=True)
+    kunde_city = models.CharField(max_length=100, null=True, blank=True)
+    kunde_email = models.CharField(max_length=100, null=True, blank=True)
+    kunde_mobile = models.CharField(max_length=100, null=True, blank=True)
 
