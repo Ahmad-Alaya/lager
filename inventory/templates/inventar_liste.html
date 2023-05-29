@@ -3,7 +3,7 @@
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <h1>Inventarliste</h1>
-
+<div class="form-control">
 <label for="auswahlGeraet">Choose a machine:</label>
 <select name="maschine" id="auswahlGeraet">
   <option value="waschmaschine">Waschmaschine</option>
@@ -11,6 +11,7 @@
   <option value="kuehlschrank">Kühlschrank</option>
   <option value="geraete">Geräte</option>
 </select>
+</div>
 
 <div id="geraete-container" style="display: none">
     <ul>

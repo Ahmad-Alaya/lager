@@ -1,117 +1,138 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>{{ gerät.marke }} verkaufen</h2>
-<form method="post">
+  <h2>{{ gerät.marke }} verkaufen</h2>
+  <form method="post">
     {% csrf_token %}
-    <label for="anzahl">Anzahl:</label>
-    <input type="number" id="anzahl" name="anzahl" value="1" min="1" max="{{ gerät.anzahl }}">
-    <br><br>
+    <div class="form-group">
+      <label for="anzahl">Anzahl:</label>
+      <input type="number" id="anzahl" name="anzahl" value="1" min="1" max="{{ gerät.anzahl }}" class="form-control">
+    </div>
 
-    <label for="zahlungsart">Zahlungsart:</label>
-    <select id="zahlungsart" name="zahlungsart">
-      <option value="">Bitte auswählen</option>
-      <option value="Bar">Bar</option>
-      <option value="Überweisung">Überweisung</option>
-    </select>
-    <br>
+    <div class="form-group">
+      <label for="zahlungsart">Zahlungsart:</label>
+      <select id="zahlungsart" name="zahlungsart" class="form-control">
+        <option value="">Bitte auswählen</option>
+        <option value="Bar">Bar</option>
+        <option value="Überweisung">Überweisung</option>
+      </select>
+    </div>
 
+    <div class="form-group">
+      <label for="verkaufsdatum">Verkaufsdatum:</label>
+      <input type="datetime-local" id="verkaufsdatum" name="verkaufsdatum" value="{{ gerät.verkaufsdatum }}" class="form-control">
+    </div>
 
-    <label for="verkaufsdatum">Verkaufsdatum:</label>
-    <input type="datetime-local" id="verkaufsdatum" name="verkaufsdatum" value="{{ gerät.verkaufsdatum }}">
-    <br>
-
-     {% if gerät.model %}
+    {% if gerät.model %}
+      <div class="form-group">
         <label for="model">Model:</label>
-        <input type="text" id="model" name="model" value="{{ gerät.model }}">
-        <br>
+        <input type="text" id="model" name="model" value="{{ gerät.model }}" class="form-control">
+      </div>
     {% else %}
+      <div class="form-group">
         <label for="model">Model:</label>
-        <input type="text" id="model" name="model">
-        <br>
+        <input type="text" id="model" name="model" class="form-control">
+      </div>
     {% endif %}
 
-     {% if gerät.marke %}
+    {% if gerät.marke %}
+      <div class="form-group">
         <label for="marke">Marke:</label>
-        <input type="text" id="marke" name="marke" value="{{ gerät.marke }}">
-        <br>
+        <input type="text" id="marke" name="marke" value="{{ gerät.marke }}" class="form-control">
+      </div>
     {% else %}
+      <div class="form-group">
         <label for="marke">Marke:</label>
-        <input type="text" id="marke" name="marke">
-        <br>
+        <input type="text" id="marke" name="marke" class="form-control">
+      </div>
     {% endif %}
 
     {% if gerät.serial_number %}
+      <div class="form-group">
         <label for="seriennummer">Seriennummer:</label>
-        <input type="text" id="seriennummer" name="seriennummer" value="{{ gerät.serial_number }}">
-        <br>
+        <input type="text" id="seriennummer" name="seriennummer" value="{{ gerät.serial_number }}" class="form-control">
+      </div>
     {% else %}
+      <div class="form-group">
         <label for="seriennummer">Seriennummer:</label>
-        <input type="text" id="seriennummer" name="seriennummer">
-        <br>
+        <input type="text" id="seriennummer" name="seriennummer" class="form-control">
+      </div>
     {% endif %}
 
     {% if gerät.artikel_nr %}
+      <div class="form-group">
         <label for="artikelnummer">Artikelnummer:</label>
-        <input type="text" id="artikelnummer" name="artikelnummer" value="{{ gerät.artikel_nr }}">
-        <br>
+        <input type="text" id="artikelnummer" name="artikelnummer" value="{{ gerät.artikel_nr }}" class="form-control">
+      </div>
     {% else %}
+      <div class="form-group">
         <label for="artikelnummer">Artikelnummer:</label>
-        <input type="text" id="artikelnummer" name="artikelnummer">
-        <br>
+        <input type="text" id="artikelnummer" name="artikelnummer" class="form-control">
+      </div>
     {% endif %}
 
     {% if gerät.preis %}
+      <div class="form-group">
         <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis">
-        <br>
+        <input type="number" step="0.01" id="preis" name="preis" class="form-control">
+      </div>
     {% else %}
-         <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis">
-        <br>
+      <div class="form-group">
+        <label for="preis">Preis:</label>
+        <input type="number" step="0.01" id="preis" name="preis" class="form-control">
+      </div>
     {% endif %}
 
     {% if gerät.Beschreibung %}
+      <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung"></textarea>
-        <br>
+        <textarea id="beschreibung" name="beschreibung" class="form-control"></textarea>
+      </div>
     {% else %}
+      <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung"></textarea>
-        <br>
+        <textarea id="beschreibung" name="beschreibung" class="form-control"></textarea>
+      </div>
     {% endif %}
 
+    <div class="form-group">
+      <label for="rechnungs_nr">Rechnungsnummer:</label>
+      <input type="number" id="rechnungs_nr" name="rechnungs_nr" class="form-control">
+    </div>
 
-    <label for="rechnungs_nr">Rechnungsnummer:</label>
-    <input type="number" id="rechnungs_nr" name="rechnungs_nr">
-    <br>
     <h3>Kundeninformation</h3>
     <br>
-    <label for="kunde_name">Kunde Name:</label>
-    <input type="text" id="kunde_name" name="kunde_name">
-    <br>
 
-    <label for="kunde_strasse">Kunde Straße:</label>
-    <input type="text" id="kunde_strasse" name="kunde_strasse">
-    <br>
+    <div class="form-group">
+      <label for="kunde_name">Kunde Name:</label>
+      <input type="text" id="kunde_name" name="kunde_name" class="form-control">
+    </div>
 
-    <label for="kunde_plz">Kunde PLZ:</label>
-    <input type="text" id="kunde_plz" name="kunde_plz">
-    <br>
+    <div class="form-group">
+      <label for="kunde_strasse">Kunde Straße:</label>
+      <input type="text" id="kunde_strasse" name="kunde_strasse" class="form-control">
+    </div>
 
-    <label for="kunde_city">Kunde Stadt:</label>
-    <input type="text" id="kunde_city" name="kunde_city">
-    <br>
+    <div class="form-group">
+      <label for="kunde_plz">Kunde PLZ:</label>
+      <input type="text" id="kunde_plz" name="kunde_plz" class="form-control">
+    </div>
 
-    <label for="kunde_email">Kunde E-Mail:</label>
-    <input type="email" id="kunde_email" name="kunde_email">
-    <br>
+    <div class="form-group">
+      <label for="kunde_city">Kunde Stadt:</label>
+      <input type="text" id="kunde_city" name="kunde_city" class="form-control">
+    </div>
 
-    <label for="kunde_mobile">Kunde Mobilnummer:</label>
-    <input type="text" id="kunde_mobile" name="kunde_mobile">
-    <br>
+    <div class="form-group">
+      <label for="kunde_email">Kunde E-Mail:</label>
+      <input type="email" id="kunde_email" name="kunde_email" class="form-control">
+    </div>
 
-    <input type="submit" value="Verkaufen">
-</form>
+    <div class="form-group">
+      <label for="kunde_mobile">Kunde Mobilnummer:</label>
+      <input type="text" id="kunde_mobile" name="kunde_mobile" class="form-control">
+    </div>
+
+    <input type="submit" value="Verkaufen" class="btn btn-primary">
+  </form>
 {% endblock %}
-
