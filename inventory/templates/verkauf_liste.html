@@ -2,21 +2,61 @@
 
 {% block content %}
 <h1>Verkaufsliste</h1>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+</style>
 
 <table>
   <thead>
     <tr>
       <th>Gerät</th>
+      <th>Marke</th>
+      <th>Preis</th>
       <th>Verkaufsdatum</th>
+      <th>Zahlungsart</th>
+      <th>Kunde</th>
+      <th>Rechnungsnummer</th>
       <th>Verkäufer</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for verkauf in verkauf_list %}
     <tr>
-      <td>{{ verkauf.gerät }}</td>
-      <td>{{ verkauf.verkaufsdatum }}</td>
-      <td>{{ verkauf.verkäufer }}</td>
+      <form action="{% url 'verkauf_liste' %}" method="post">
+        {% csrf_token %}
+        <td>
+          {% if verkauf.waschmaschine %}
+            {{ verkauf.waschmaschine }}
+          {% elif verkauf.kuhlschrank %}
+            {{ verkauf.kuhlschrank }}
+          {% elif verkauf.spuelmaschine %}
+            {{ verkauf.spuelmaschine }}
+          {% endif %}
+        </td>
+        <td>{{ verkauf.marke }}</td>
+        <td>{{ verkauf.preis }}</td>
+        <td>{{ verkauf.verkaufsdatum }}</td>
+        <td>{{ verkauf.zahlungsart }}</td>
+        <td>{{ verkauf.kunde_name }}</td>
+        <td>{{ verkauf.rechnungs_nr }}</td>
+        <td>{{ verkauf.verkäufer }}</td>
+        <input type="hidden" name="verkauf_id" value="{{ verkauf.id }}">
+        <td><input type="submit" value="Download"></td>
+      </form>
     </tr>
     {% endfor %}
   </tbody>
