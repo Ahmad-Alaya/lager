@@ -12,11 +12,36 @@
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    position: relative;
   }
 
   tr:nth-child(even) {
     background-color: #f2f2f2;
   }
+
+ th::after {
+  content: "";
+  border-style: solid;
+  border-width: 0.25em 0.25em 0;
+  display: inline-block;
+  height: 0.5em;
+  width: 0.5em;
+  position: absolute;
+  top: 50%;
+  right: -0.25em;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+th.asc::after {
+  border-color: transparent transparent #000;
+}
+
+th.desc::after {
+  border-color: #000 transparent transparent;
+}
+
 </style>
 
 <table>
@@ -118,4 +143,73 @@ let originalBezahltValue = '{{ verkauf.bezahlt }}';
   }
 
 </script>
+
+<script>
+  // Function to sort the table by the given column index
+  function sortTable(columnIndex) {
+    let table, rows, switching, i, x, y, shouldSwitch;
+    table = document.querySelector('table');
+    switching = true;
+
+    // Get the current sorting column index and direction
+    let currentSortIndex = parseInt(table.getAttribute('data-sort-index') || 0);
+    let sortOrder = table.getAttribute('data-sort-order') || 'asc';
+
+    // Determine if the user clicked on the same column
+    if (columnIndex === currentSortIndex) {
+      // Reverse the sorting order
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Set the new sorting column and default to ascending order
+      currentSortIndex = columnIndex;
+      sortOrder = 'asc';
+    }
+
+    // Update the sorting indicators
+    const headers = document.querySelectorAll('th');
+    headers.forEach((header, index) => {
+      header.classList.remove('asc', 'desc');
+      if (index === currentSortIndex) {
+        header.classList.add(sortOrder);
+      }
+    });
+
+    table.setAttribute('data-sort-index', currentSortIndex);
+    table.setAttribute('data-sort-order', sortOrder);
+
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+
+      for (i = 1; i < (rows.length - 1); i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName('td')[columnIndex];
+        y = rows[i + 1].getElementsByTagName('td')[columnIndex];
+
+        if (sortOrder === 'asc') {
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        } else if (sortOrder === 'desc') {
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
+
+  // Attach event listeners to the table headers for sorting
+  document.querySelectorAll('th').forEach((header, index) => {
+    header.addEventListener('click', () => sortTable(index));
+  });
+</script>
+
 {% endblock %}

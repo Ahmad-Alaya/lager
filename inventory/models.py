@@ -114,7 +114,7 @@ class Verkauf(models.Model):
     artikel_nr = models.CharField(max_length=50, null=True, blank=True)
     preis = models.DecimalField(max_digits=8, decimal_places=2)
     beschreibung = models.TextField(max_length=500, null=True, blank=True)
-    rechnungs_nr = models.IntegerField()
+    rechnungs_nr = models.IntegerField(unique=True)
 
     kunde_name = models.CharField(max_length=100, null=True, blank=True)
     kunde_strasse = models.CharField(max_length=100, null=True, blank=True)

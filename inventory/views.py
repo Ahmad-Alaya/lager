@@ -214,7 +214,7 @@ def verkauf(request, id, type):
                 verkauf.save()
             return redirect('verkauf_liste')
 
-    rechnungs_nr = Verkauf.objects.aggregate(Max('rechnungs_nr'))['rechnungs_nr__max']
+    rechnungs_nr = Verkauf.objects.aggregate(Max('rechnungs_nr'))['rechnungs_nr__max']  #todo send a list and check in html if value is unique
     if not rechnungs_nr:
         rechnungs_nr = 0
     context = {'gerät': type_maschine, 'rechnungsNr': int(rechnungs_nr)+1}
