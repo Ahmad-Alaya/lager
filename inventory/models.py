@@ -1,5 +1,6 @@
 from django.db import models
-from django.shortcuts import render
+from datetime import datetime, timedelta, timezone
+import pytz
 
 JA_NEIN_CHOICES = [
     ('Ja','Ja'), ('Nein','Nein')
@@ -23,12 +24,7 @@ class BasicInformation(models.Model):
     note = models.TextField(max_length=1000, null=True, blank=True)
 
 
-class Gerät(models.Model):
-    marke = models.CharField(max_length=50)
-    anzahl = models.IntegerField()
-    seriennummer = models.CharField(max_length=50)
-    artikelnummer = models.CharField(max_length=50)
-    preis = models.DecimalField(max_digits=8, decimal_places=2)
+class Gerät(BasicInformation):
 
     def __str__(self):
         return self.marke
@@ -41,11 +37,11 @@ class Waschmaschine(BasicInformation):
     fassung = models.CharField(max_length=20, choices=FASSUNG_CHOICES)
     toploader = models.CharField(max_length=5, choices=JA_NEIN_CHOICES, default='Nein')
 
-    # def __str__(self):
-    #     if self.preis:
-    #         return f"{self.marke} : {self.fassung}: {self.model} : {self.anzahl} : {self.preis} : {self.toploader}"
-    #     else:
-    #         return f"{self.marke} : {self.fassung}: {self.model} : {self.anzahl} : {self.toploader}"
+    def __str__(self):
+        if self.preis:
+            return f"{self.marke} : {self.fassung}: {self.model} : {self.anzahl} : {self.preis} : {self.toploader}"
+        else:
+            return f"{self.marke} : {self.fassung}: {self.model} : {self.anzahl} : {self.toploader}"
 
 class Spuelmaschine(BasicInformation):
     BREITE_CHOICESE = [
@@ -95,20 +91,30 @@ class Kuehlschrank(BasicInformation):
 
 
 class Verkauf(models.Model):
+    TYPE_OF_CHOICES = [
+        ('Waschmaschine','Waschmaschine'),
+        ('Kühlschrank', 'Kühlschrank'),
+        ('Spülmaschine','Spülmaschine'),
+        ('gerät','gerät'),
+
+    ]
+
     gerät = models.ForeignKey(Gerät, on_delete=models.SET_NULL, null=True, blank=True)
     waschmaschine = models.ForeignKey(Waschmaschine, on_delete=models.SET_NULL, null=True, blank=True)
     kuhlschrank = models.ForeignKey(Kuehlschrank, on_delete=models.SET_NULL, null=True, blank=True)
     spuelmaschine= models.ForeignKey(Spuelmaschine, on_delete=models.SET_NULL, null=True, blank= True)
     verkäufer = models.CharField(max_length=255)
+    type_of = models.CharField(max_length=200, choices=TYPE_OF_CHOICES)
+    menge = models.IntegerField()
 
     zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
-    verkaufsdatum = models.DateTimeField(auto_now_add=True)
+    verkaufsdatum = models.DateTimeField(editable=True,default=datetime.now)
     marke = models.CharField(max_length=50, null=True, blank=True)
-    seriennummer = models.CharField(max_length=50, null=True, blank=True)
-    artikelnummer = models.CharField(max_length=50, null=True, blank=True)
-    preis = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    serial_number = models.CharField(max_length=50, null=True, blank=True)
+    artikel_nr = models.CharField(max_length=50, null=True, blank=True)
+    preis = models.DecimalField(max_digits=8, decimal_places=2)
     beschreibung = models.TextField(max_length=500, null=True, blank=True)
-    rechnungs_nr = models.IntegerField(null=True, blank=True)
+    rechnungs_nr = models.IntegerField()
 
     kunde_name = models.CharField(max_length=100, null=True, blank=True)
     kunde_strasse = models.CharField(max_length=100, null=True, blank=True)

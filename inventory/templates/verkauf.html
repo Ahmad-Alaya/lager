@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>{{ gerät.marke }} verkaufen</h2>
+  <h2>Rechnung für {{ gerät.marke }} erstellen</h2>
   <form method="post">
     {% csrf_token %}
     <div class="form-group">
@@ -11,8 +11,8 @@
 
     <div class="form-group">
       <label for="zahlungsart">Zahlungsart:</label>
-      <select id="zahlungsart" name="zahlungsart" class="form-control">
-        <option value="">Bitte auswählen</option>
+      <select id="zahlungsart" name="zahlungsart" class="form-control" required>
+        <option value="">None</option>
         <option value="Bar">Bar</option>
         <option value="Überweisung">Überweisung</option>
       </select>
@@ -22,6 +22,16 @@
       <label for="verkaufsdatum">Verkaufsdatum:</label>
       <input type="datetime-local" id="verkaufsdatum" name="verkaufsdatum" value="{{ gerät.verkaufsdatum }}" class="form-control">
     </div>
+
+    <script>
+    // Get the current date and time
+    var now = new Date();
+    // Format the date as "YYYY-MM-DDTHH:mm" (the required format for datetime-local input)
+    var formattedDate = now.toISOString().slice(0, 16);
+    var verkaufsdatumInput = document.getElementById("verkaufsdatum");
+    // Set the value of the input element to the formatted date
+    verkaufsdatumInput.value = formattedDate;
+    </script>
 
     {% if gerät.model %}
       <div class="form-group">
@@ -74,7 +84,7 @@
     {% if gerät.preis %}
       <div class="form-group">
         <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis" class="form-control">
+        <input type="number" step="0.01" id="preis" name="preis" class="form-control" value="{{ gerät.preis }}" required>
       </div>
     {% else %}
       <div class="form-group">
@@ -84,55 +94,75 @@
     {% endif %}
 
     {% if gerät.Beschreibung %}
+        <script>
+        console.log("besc");
+        console.log("{{ gerät.Beschreibung }}");
+        </script>
       <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung" class="form-control"></textarea>
+        <textarea id="beschreibung" name="beschreibung" class="form-control"  required>{{ gerät.Beschreibung }}</textarea>
       </div>
     {% else %}
+        <script>
+        console.log("kein besc");
+        </script>
       <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung" class="form-control"></textarea>
+        <textarea id="beschreibung" name="beschreibung" class="form-control" required></textarea>
       </div>
+      <script>
+        // Get the current URL of the page
+        var currentURL = window.location.href;
+        // Split the URL by "/" characters to get the individual segments
+        var urlSegments = currentURL.split("/");
+        // Get the last segment of the URL
+        var geraeteType = urlSegments[urlSegments.length - 2];
+        var textareaElement = document.getElementById("beschreibung");
+        console.log(textareaElement)
+        textareaElement.value = "{{gerät.marke}} " + geraeteType + " model Nr: "+ "{{ gerät.model }}";
+        </script>
     {% endif %}
 
     <div class="form-group">
       <label for="rechnungs_nr">Rechnungsnummer:</label>
-      <input type="number" id="rechnungs_nr" name="rechnungs_nr" class="form-control">
+      <input type="number" id="rechnungs_nr" name="rechnungs_nr" class="form-control" value="{{ rechnungsNr }}">
     </div>
 
     <h3>Kundeninformation</h3>
     <br>
 
     <div class="form-group">
-      <label for="kunde_name">Kunde Name:</label>
-      <input type="text" id="kunde_name" name="kunde_name" class="form-control">
+      <label for="kunde_name">Name:</label>
+      <input type="text" id="kunde_name" name="kunde_name" class="form-control" value="Bonn Kunde" required>
     </div>
 
     <div class="form-group">
-      <label for="kunde_strasse">Kunde Straße:</label>
+      <label for="kunde_strasse">Straße & Hausnummer:</label>
       <input type="text" id="kunde_strasse" name="kunde_strasse" class="form-control">
     </div>
 
     <div class="form-group">
-      <label for="kunde_plz">Kunde PLZ:</label>
+      <label for="kunde_plz">PLZ:</label>
       <input type="text" id="kunde_plz" name="kunde_plz" class="form-control">
     </div>
 
     <div class="form-group">
-      <label for="kunde_city">Kunde Stadt:</label>
+      <label for="kunde_city">Stadt:</label>
       <input type="text" id="kunde_city" name="kunde_city" class="form-control">
     </div>
 
     <div class="form-group">
-      <label for="kunde_email">Kunde E-Mail:</label>
+      <label for="kunde_email">E-Mail:</label>
       <input type="email" id="kunde_email" name="kunde_email" class="form-control">
     </div>
 
     <div class="form-group">
-      <label for="kunde_mobile">Kunde Mobilnummer:</label>
+      <label for="kunde_mobile">Mobilnummer:</label>
       <input type="text" id="kunde_mobile" name="kunde_mobile" class="form-control">
     </div>
 
     <input type="submit" value="Verkaufen" class="btn btn-primary">
+
   </form>
+
 {% endblock %}

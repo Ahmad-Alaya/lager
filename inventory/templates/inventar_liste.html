@@ -6,6 +6,7 @@
 <div class="form-control">
 <label for="auswahlGeraet">Choose a machine:</label>
 <select name="maschine" id="auswahlGeraet">
+  <option value="------------">------------</option>
   <option value="waschmaschine">Waschmaschine</option>
   <option value="spuelmaschine">Spülmaschine</option>
   <option value="kuehlschrank">Kühlschrank</option>
@@ -13,6 +14,9 @@
 </select>
 </div>
 
+<style>
+ul{color: #248e98;}
+</style>
 <div id="geraete-container" style="display: none">
     <ul>
     {% for gerät in geräte %}
@@ -27,9 +31,10 @@
 </div>
 <div id="waschmaschine-container" style="display: none">
     <ul>
-    {% for waschmaschin in waschmaschine %}
+    {% for waschmaschin in waschmaschine|dictsort:'marke' %}
         <li>
             <h2>{{ waschmaschin.marke }}</h2>
+            <p>Model: {{ waschmaschin.model }}</p>
             <p>Preis: {{ waschmaschin.preis }}</p>
             <p>Anzahl: {{ waschmaschin.anzahl }}</p>
             <p><a href="{% url 'verkauf' waschmaschin.id 'waschmaschine'%}">Verkaufen</a></p>
@@ -40,9 +45,10 @@
 
 <div id="spuelmaschine-container" style="display: none">
     <ul>
-    {% for spuelmaschin in spuelmaschine %}
+    {% for spuelmaschin in spuelmaschine|dictsort:'marke' %}
         <li>
             <h2>{{ spuelmaschin.marke }}</h2>
+            <p>Model: {{ spuelmaschin.model }}</p>
             <p>Preis: {{ spuelmaschin.preis }}</p>
             <p>Anzahl: {{ spuelmaschin.anzahl }}</p>
             <p><a href="{% url 'verkauf' spuelmaschin.id 'spuelmaschine'%}">Verkaufen</a></p>
@@ -53,9 +59,10 @@
 
 <div id="kuehlschrank-container" style="display: none">
     <ul>
-    {% for kuehlschran in kuehlschrank %}
+    {% for kuehlschran in kuehlschrank|dictsort:'marke' %}
         <li>
             <h2>{{ kuehlschran.marke }}</h2>
+            <p>Model: {{ kuehlschran.model }}</p>
             <p>Preis: {{ kuehlschran.preis }}</p>
             <p>Anzahl: {{ kuehlschran.anzahl }}</p>
             <p><a href="{% url 'verkauf' kuehlschran.id 'kuehlschrank'%}">Verkaufen</a></p>
@@ -63,6 +70,7 @@
     {% endfor %}
     </ul>
 </div>
+
 
 <script>
   $("#auswahlGeraet").on('change', () => {
