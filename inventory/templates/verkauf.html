@@ -95,17 +95,12 @@
 
     {% if gerät.Beschreibung %}
         <script>
-        console.log("besc");
-        console.log("{{ gerät.Beschreibung }}");
         </script>
       <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
         <textarea id="beschreibung" name="beschreibung" class="form-control"  required>{{ gerät.Beschreibung }}</textarea>
       </div>
     {% else %}
-        <script>
-        console.log("kein besc");
-        </script>
       <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
         <textarea id="beschreibung" name="beschreibung" class="form-control" required></textarea>
@@ -127,6 +122,169 @@
       <label for="rechnungs_nr">Rechnungsnummer:</label>
       <input type="number" id="rechnungs_nr" name="rechnungs_nr" class="form-control" value="{{ rechnungsNr }}">
     </div>
+  <div id="productFields" style="display: none;">
+      <div class="form-group">
+        <h3>2. Product</h3>
+        <label for="productType">Product Type:</label>
+        <select id="productType" class="form-control">
+          <option value="">Select Product Type</option>
+          <option value="Waschmaschine">Waschmaschine</option>
+          <option value="Spülmaschine">Spülmaschine</option>
+          <option value="Kühlschrank">Kühlschrank</option>
+        </select>
+      </div>
+      <div class="form-group" id="productDropdown" style="display: none;">
+        <label for="product">Product:</label>
+        <select id="product" class="form-control">
+          <!-- Options will be populated dynamically using JavaScript -->
+        </select>
+      </div>
+
+    <!-- Additional fields for the selected product -->
+    <div class="form-group" id="model2Field" style="display: none;">
+      <label for="model2">Model 2:</label>
+      <input type="text" id="model2" name="model2" class="form-control">
+    </div>
+    <div class="form-group" id="marke2Field" style="display: none;">
+      <label for="marke2">Marke 2:</label>
+      <input type="text" id="marke2" name="marke2" class="form-control">
+    </div>
+    <div class="form-group" id="seriennummer2Field" style="display: none;">
+      <label for="seriennummer2">Seriennummer 2:</label>
+      <input type="text" id="seriennummer2" name="seriennummer2" class="form-control">
+    </div>
+    <div class="form-group" id="artikelnummer2Field" style="display: none;">
+      <label for="artikelnummer2">Artikelnummer 2:</label>
+      <input type="text" id="artikelnummer2" name="artikelnummer2" class="form-control">
+    </div>
+    <div class="form-group" id="preis2Field" style="display: none;">
+      <label for="preis2">Preis 2:</label>
+      <input type="number" step="0.01" id="preis2" name="preis2" class="form-control">
+    </div>
+    <div class="form-group" id="beschreibung2Field" style="display: none;">
+        <label for="beschreibung2">Beschreibung 2:</label>
+        <textarea id="beschreibung2" name="beschreibung2" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group" id="Id2Field"  style="visibility: hidden;">
+      <label for="Id2">Id2:</label>
+      <input type="text" id="Id2" name="Id2" class="form-control">
+  </div>
+
+  </div>
+
+
+
+  <script>
+    // Function to populate the product dropdown based on the selected product type
+    function populateProductDropdown() {
+      var productType = document.getElementById("productType").value;
+      var productDropdown = document.getElementById("product");
+      productDropdown.innerHTML = ""; // Clear existing options
+
+        var allWama = {{ all_waschmaschinen|safe }};
+        var allSpul = {{ all_spuelmaschinen|safe }};
+        var allKul = {{ all_kuelschrank|safe }};
+
+
+        // Extract strings containing "marke", "model", and "preis" from the objects in array x
+        const allWamaProduct = allWama
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr} , id: ${item.id}`);
+        const allSpulProduct = allSpul
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+        const allKulProduct = allKul
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        var products = {
+        "Waschmaschine": allWamaProduct,
+        "Spülmaschine": allSpulProduct,
+        "Kühlschrank": allKulProduct,
+      };
+
+      if (products.hasOwnProperty(productType)) {
+        var options = products[productType];
+        options.forEach(function(option) {
+          var optionElement = document.createElement("option");
+          optionElement.value = option;
+          optionElement.textContent = option;
+          productDropdown.appendChild(optionElement);
+        });
+        document.getElementById("productDropdown").style.display = "block";
+      } else {
+        document.getElementById("productDropdown").style.display = "none";
+      }
+    }
+
+    // Add event listener to the product type dropdown
+    document.getElementById("productType").addEventListener("change", populateProductDropdown);
+
+    // Function to show additional fields for the selected product
+    function showAdditionalFields() {
+      var selectedProduct = document.getElementById("product").value;
+      var additionalFields = ["model2", "marke2", "seriennummer2", "artikelnummer2", "preis2", "beschreibung2",];
+
+      // Show additional fields if a product is selected
+      if (selectedProduct) {
+        var productInfo = selectedProduct.split(", ");
+        if (productInfo.length === 5) {
+          var [marke, model, preis, artikel_nr,id2] = productInfo.map(item => item.split(": ")[1]);
+          document.getElementById("marke2").value = marke;
+          document.getElementById("model2").value = model;
+          document.getElementById("preis2").value = preis;
+          document.getElementById("artikelnummer2").value = artikel_nr;
+          document.getElementById("beschreibung2").value = marke +" "+ document.getElementById("productType").value + " model Nr: "+ model ;
+
+          document.getElementById("Id2").value= id2;  //todo stoped work here this was not send to backend
+
+          console.log(id2); //it returns 14
+          console.log(document.getElementById("Id2").value);//it returns 14
+
+
+        }
+        document.getElementById("productFields").style.display = "block";
+        document.getElementById("deleteProductBtn").style.display = "block";
+        document.getElementById("model2Field").style.display = "block";
+        document.getElementById("marke2Field").style.display = "block";
+        document.getElementById("seriennummer2Field").style.display = "block";
+        document.getElementById("artikelnummer2Field").style.display = "block";
+        document.getElementById("preis2Field").style.display = "block";
+        document.getElementById("beschreibung2Field").style.display = "block";
+      } else {
+        // Hide additional fields if no product is selected  //todo if hiden the the value for id2 should be empty and type2 also
+        additionalFields.forEach(function(field) {
+          document.getElementById(field + "Field").style.display = "none";
+        });
+      }
+    }
+
+    // Add event listener to the product dropdown
+    document.getElementById("product").addEventListener("change", showAdditionalFields);
+
+
+
+  </script>
+
+
+    <button id="addProductBtn" type="button" class="btn btn-primary">Add New Product</button>
+    <button id="deleteProductBtn" type="button" class="btn btn-danger" style="display: none;">Delete</button>
+
+  <script>
+      // Add event listener to the "Add New Product" button
+      document.getElementById("addProductBtn").addEventListener("click", function() {
+        document.getElementById("productFields").style.display = "block";
+        document.getElementById("deleteProductBtn").style.display = "block";
+      });
+
+      // Add event listener to the "Delete" button
+      document.getElementById("deleteProductBtn").addEventListener("click", function() {
+        document.getElementById("productFields").style.display = "none";
+        document.getElementById("addProductBtn").style.display = "block";
+        document.getElementById("deleteProductBtn").style.display = "none";
+      });
+  </script>
 
     <h3>Kundeninformation</h3>
     <br>
@@ -162,6 +320,31 @@
     </div>
 
     <input type="submit" value="Verkaufen" class="btn btn-primary">
+
+    <div class="form-group" id="type2Field" style="display: none;">
+      <label for="type2">Type2:</label>
+      <input type="text" id="type2" name="type2" class="form-control">
+    </div>
+
+    <script>
+
+    // Function to show the type2 field and set its value based on the selected productType
+    function showType2Field() {
+        var productType = document.getElementById("productType").value;
+        var type2Field = document.getElementById("type2Field");
+        if (productType) {
+          document.getElementById("type2").value = productType;
+          console.log(document.getElementById("type2").value);
+        }
+    }
+
+    // Add event listener to the product type dropdown
+    document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("productType").addEventListener("change", showType2Field);
+    });
+
+    </script>
+
 
   </form>
 

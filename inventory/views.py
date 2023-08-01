@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from inventory.models import *
 from django.http import HttpResponse
@@ -8,7 +9,8 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.platypus import Table, TableStyle
 from django.db.models import Max
-from datetime import datetime
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 def inventar_liste(request):
     geräte = Gerät.objects.all().filter(anzahl__gt=0)
@@ -66,6 +68,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -90,6 +93,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke= request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -120,6 +124,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -144,6 +149,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -174,6 +180,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -198,6 +205,7 @@ def verkauf(request, id, type):
                     zahlungsart=request.POST.get('zahlungsart'),
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
                     serial_number=request.POST.get('serial_number'),
                     artikel_nr=request.POST.get('artikel_nr'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
@@ -215,9 +223,18 @@ def verkauf(request, id, type):
             return redirect('verkauf_liste')
 
     rechnungs_nr = Verkauf.objects.aggregate(Max('rechnungs_nr'))['rechnungs_nr__max']  #todo send a list and check in html if value is unique
+    # todo add all classes
+    all_waschmaschinen= json.dumps(list(Waschmaschine.objects.all().values()),cls=DjangoJSONEncoder)
+    all_kuelschrank = json.dumps(list(Kuehlschrank.objects.all().values()), cls=DjangoJSONEncoder)
+    all_spuelmaschinen = json.dumps(list(Spuelmaschine.objects.all().values()), cls=DjangoJSONEncoder)
+
     if not rechnungs_nr:
         rechnungs_nr = 0
-    context = {'gerät': type_maschine, 'rechnungsNr': int(rechnungs_nr)+1}
+    context = {'gerät': type_maschine, 'rechnungsNr': int(rechnungs_nr)+1,
+               'all_waschmaschinen':all_waschmaschinen,
+               'all_kuelschrank':all_kuelschrank,
+               'all_spuelmaschinen':all_spuelmaschinen,
+               }
     return render(request, 'verkauf.html', context)
 
 def verkaufliste(request):
@@ -380,3 +397,26 @@ def _wrap_text(text, max_length):
     return "\n  ".join(lines)
 
 
+def _create_verkauf_object(model_obj, request, type_of, anzahl):
+    verkauf_obj = Verkauf.objects.create(
+                    waschmaschine=model_obj,
+                    type_of=type_of,
+                    menge=anzahl,
+                    verkäufer=request.user.username,
+                    zahlungsart=request.POST.get('zahlungsart'),
+                    verkaufsdatum=request.POST.get('verkaufsdatum'),
+                    marke=request.POST.get('marke'),
+                    model=request.POST.get('model'),
+                    serial_number=request.POST.get('serial_number'),
+                    artikel_nr=request.POST.get('artikel_nr'),
+                    preis=float(request.POST.get('preis'))*float(anzahl),
+                    beschreibung=request.POST.get('beschreibung'),
+                    rechnungs_nr=request.POST.get('rechnungs_nr'),
+                    kunde_name=request.POST.get('kunde_name'),
+                    kunde_strasse=request.POST.get('kunde_strasse'),
+                    kunde_plz=request.POST.get('kunde_plz'),
+                    kunde_city=request.POST.get('kunde_city'),
+                    kunde_email=request.POST.get('kunde_email'),
+                    kunde_mobile=request.POST.get('kunde_mobile'),
+                )
+    return verkauf_obj

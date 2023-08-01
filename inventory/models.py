@@ -11,7 +11,7 @@ ZAHLUNGSART_CHOICES = [
 ]
 class BasicInformation(models.Model):
     marke = models.CharField(max_length=50)
-    model = models.CharField(max_length=100)
+    model = models.CharField(max_length=100,unique=True)
     anzahl = models.IntegerField(default=1)
     artikel_nr = models.CharField(max_length=200, null=True, blank=True)
     einkaufsdatum = models.DateField(null=True, blank=True)
@@ -110,6 +110,7 @@ class Verkauf(models.Model):
     zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
     verkaufsdatum = models.DateTimeField(editable=True,default=datetime.now)
     marke = models.CharField(max_length=50, null=True, blank=True)
+    model = models.CharField(max_length=100)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
     artikel_nr = models.CharField(max_length=50, null=True, blank=True)
     preis = models.DecimalField(max_digits=8, decimal_places=2)
