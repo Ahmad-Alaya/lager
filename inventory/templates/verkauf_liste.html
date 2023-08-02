@@ -52,7 +52,7 @@ th.desc::after {
       <th>Verkaufsdatum</th>
       <th>Zahlungsart</th>
       <th>Kunde</th>
-      <th>Rechnungsnummer</th>
+      <th>RechnungsNr</th>
       <th>Verkäufer</th>
       <th>Bezahlt</th>
       <th>Zahlungsdatum</th>
@@ -86,7 +86,7 @@ th.desc::after {
 
           {% endif %}
         </td>
-        <td>{{ verkauf.preis }}</td>
+        <td>{{ verkauf.final_preis }}</td>
         <td>{{ verkauf.verkaufsdatum }}</td>
         <td>{{ verkauf.zahlungsart }}</td>
         <td>{{ verkauf.kunde_name }}</td>

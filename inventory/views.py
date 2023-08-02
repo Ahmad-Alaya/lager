@@ -124,7 +124,7 @@ def verkauf(request, id, type):
         return redirect('verkauf_liste')
 
     rechnungs_nr = Verkauf.objects.aggregate(Max('rechnungs_nr'))['rechnungs_nr__max']  #todo send a list and check in html if value is unique
-    # todo add all classes
+
     all_waschmaschinen= json.dumps(list(Waschmaschine.objects.all().values()),cls=DjangoJSONEncoder)
     all_kuelschrank = json.dumps(list(Kuehlschrank.objects.all().values()), cls=DjangoJSONEncoder)
     all_spuelmaschinen = json.dumps(list(Spuelmaschine.objects.all().values()), cls=DjangoJSONEncoder)
@@ -478,18 +478,25 @@ def _update_inventar_2_product(verkauf_obj, model_obj, request, type_maschine , 
 def _update_verkauf_for_obj2(verkauf_obj, model_obj, request, type_maschine, anzahl):
     verkauf_obj.type_of2 = type_maschine
     verkauf_obj.menge2 = anzahl
+
     if request.POST.get('marke2'):
         verkauf_obj.marke2 = request.POST.get('marke2')
+
     if request.POST.get('model2'):
         verkauf_obj.model2 = request.POST.get('model2')
+
     if request.POST.get('seriennummer2'):
         verkauf_obj.serial_number2 = request.POST.get('seriennummer2')
+
     if request.POST.get('artikelnummer2'):
         verkauf_obj.artikel_nr2 = request.POST.get('artikelnummer2')
-    if request.POST.get('preis2'):
-        verkauf_obj.preis2 = float(request.POST.get('preis2'))*float(anzahl)
+
     if request.POST.get('beschreibung2'):
         verkauf_obj.beschreibung2 = request.POST.get('beschreibung2')
+
+    if not request.POST.get('preis2'):
+        verkauf_obj.preis2 = float(0.0)
+        verkauf_obj.final_preis = verkauf_obj.preis + verkauf_obj.preis2
 
     return verkauf_obj
 

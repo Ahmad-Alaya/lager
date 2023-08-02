@@ -6,6 +6,10 @@ JA_NEIN_CHOICES = [
     ('Ja','Ja'), ('Nein','Nein')
 ]
 
+JA_NEIN_NS_CHOICES = [
+        ('Ja', 'Ja'), ('Nein', 'Nein'), ('Nicht sicher', 'Nicht sicher')
+    ]
+
 ZAHLUNGSART_CHOICES = [
     ('Bar','Bar'), ('Überweisung','Überweisung')
 ]
@@ -93,10 +97,7 @@ class Kuehlschrank(BasicInformation):
 
 
 class Herdset(BasicInformation):
-    JA_NEIN_CHOICES = [
-        ('Ja', 'Ja'), ('Nein', 'Nein'), ('Nicht sicher', 'Nicht sicher')
-    ]
-    induktion = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES,default="Nicht sicher", max_length=20)
     pyrolyse = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
     umluft = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
     Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
@@ -104,14 +105,14 @@ class Herdset(BasicInformation):
 
 
 class Herdplatte(BasicInformation):
-    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
     breite = models.CharField(blank=True,null=True,max_length=100)
     Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
 
 class Standherd(BasicInformation):
-    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
-    pyrolyse = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
-    umluft = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
+    pyrolyse = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
+    umluft = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
     Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
     Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
 
@@ -139,6 +140,12 @@ class Verkauf(models.Model):
         ('Waschmaschine','Waschmaschine'),
         ('Kühlschrank', 'Kühlschrank'),
         ('Spülmaschine','Spülmaschine'),
+        ('Spülmaschine', 'Spülmaschine'),
+        ('Herdplatte', 'Herdplatte'),
+        ('Standherd', 'Standherd'),
+        ('Trockner', 'Trockner'),
+        ('Abzughaube', 'Abzughaube'),
+        ('Sonst', 'Sonst'),
         ('gerät','gerät'),
 
     ]
@@ -178,3 +185,10 @@ class Verkauf(models.Model):
     preis2 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     beschreibung2 = models.TextField(max_length=500, null=True, blank=True)
 
+    def calculate_final_preis(self):
+        return (self.preis or 0) + (self.preis2 or 0)
+
+    final_preis = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    def save(self, *args, **kwargs):
+        self.final_preis = self.calculate_final_preis()
+        super(Verkauf, self).save(*args, **kwargs)
