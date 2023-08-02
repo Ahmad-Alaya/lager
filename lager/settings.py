@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/admin/login/?next=/admin/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Application definition
 

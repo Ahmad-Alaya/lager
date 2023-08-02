@@ -79,9 +79,11 @@ class Kuehlschrank(BasicInformation):
         ("Gefrierbox", "Gefrierbox"),
         ("Kühlbox","Kühlbox"),
         ("Side-By-Side", "Side-By-Side"),
+        ("Truhe","Truhe"),
         ("other", "other"),
     ]
     type = models.CharField(max_length=200, choices=TYPE_CHOICES)
+    truhe_groesse = models.CharField(max_length=20,null=True,blank=True)
 
     # def __str__(self):
     #     if self.preis:
@@ -89,6 +91,48 @@ class Kuehlschrank(BasicInformation):
     #     else:
     #         return f"{self.marke} : {self.type} :{self.model} : {self.anzahl}"
 
+
+class Herdset(BasicInformation):
+    JA_NEIN_CHOICES = [
+        ('Ja', 'Ja'), ('Nein', 'Nein'), ('Nicht sicher', 'Nicht sicher')
+    ]
+    induktion = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+    pyrolyse = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+    umluft = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+    Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
+    Anzahl_kochfelder = models.PositiveIntegerField(blank=True,null=True)
+
+
+class Herdplatte(BasicInformation):
+    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    breite = models.CharField(blank=True,null=True,max_length=100)
+    Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
+
+class Standherd(BasicInformation):
+    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    pyrolyse = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    umluft = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
+    Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
+
+class Trockner(BasicInformation):
+    FASSUNG_CHOICES = [
+        ("4","4"),("5", "5"), ("6", "6"), ("7", "7"), ("8", "8"), ("9", "9"), ("10", "10"), ("mehr", "mehr"),
+
+    ]
+    TROCKNER_ARTEN = [
+        ("Kondens", "Kondens"), ("Wärmepumpe", "Wärmepumpe"), ("other", "other"),
+
+    ]
+    art = models.CharField(choices=TROCKNER_ARTEN,default="other", max_length=20)
+    fassung = models.CharField(max_length=20, choices=FASSUNG_CHOICES)
+
+class Abzughaube(BasicInformation):
+    art = models.CharField(blank=True,null=True,max_length=100)
+    breite = models.CharField(blank=True,null=True,max_length=100)
+
+class Sonst(BasicInformation):
+    geraet = models.CharField(blank=True,null=True,max_length=100)
 
 class Verkauf(models.Model):
     TYPE_OF_CHOICES = [
@@ -123,4 +167,14 @@ class Verkauf(models.Model):
     kunde_city = models.CharField(max_length=100, null=True, blank=True)
     kunde_email = models.CharField(max_length=100, null=True, blank=True)
     kunde_mobile = models.CharField(max_length=100, null=True, blank=True)
+
+
+    type_of2 = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, null=True, blank=True)
+    menge2 = models.IntegerField(null=True, blank=True)
+    marke2 = models.CharField(max_length=50, null=True, blank=True)
+    model2 = models.CharField(max_length=100, null=True, blank=True)
+    serial_number2 = models.CharField(max_length=50, null=True, blank=True)
+    artikel_nr2 = models.CharField(max_length=50, null=True, blank=True)
+    preis2 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    beschreibung2 = models.TextField(max_length=500, null=True, blank=True)
 

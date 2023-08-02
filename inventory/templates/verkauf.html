@@ -127,10 +127,16 @@
         <h3>2. Product</h3>
         <label for="productType">Product Type:</label>
         <select id="productType" class="form-control">
-          <option value="">Select Product Type</option>
-          <option value="Waschmaschine">Waschmaschine</option>
-          <option value="Spülmaschine">Spülmaschine</option>
-          <option value="Kühlschrank">Kühlschrank</option>
+            <option value="">Select Product Type</option>
+            <option value="waschmaschine">Waschmaschine</option>
+            <option value="kuehlschrank">Spülmaschine</option>
+            <option value="spuelmaschine">Kühlschrank</option>
+            <option value="herdset">Herdset</option>
+            <option value="herdplatte">Herdplatte</option>
+            <option value="standherd">Standherd</option>
+            <option value="trockner">Trockner</option>
+            <option value="abzughaube">Abzughaube</option>
+            <option value="sonst">Sonst</option>
         </select>
       </div>
       <div class="form-group" id="productDropdown" style="display: none;">
@@ -185,6 +191,12 @@
         var allWama = {{ all_waschmaschinen|safe }};
         var allSpul = {{ all_spuelmaschinen|safe }};
         var allKul = {{ all_kuelschrank|safe }};
+        var all_herdset = {{ all_herdset|safe }};
+        var all_herdplatte = {{ all_herdplatte|safe }};
+        var all_standherd = {{ all_standherd|safe }};
+        var all_trockner = {{ all_trockner|safe }};
+        var all_abzughaube = {{ all_abzughaube|safe }};
+        var all_sonst = {{ all_sonst|safe }};
 
 
         // Extract strings containing "marke", "model", and "preis" from the objects in array x
@@ -198,10 +210,42 @@
           .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
           .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
 
+        const all_herdsetProduct = all_herdset
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        const all_herdplatteProduct = all_herdplatte
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        const all_standherdProduct = all_standherd
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        const all_trocknerProduct = all_trockner
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        const all_abzughaubeProduct = all_abzughaube
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+        const all_sonstProduct = all_sonst
+          .filter(item => "marke" in item && "model" in item && "preis" in item && "artikel_nr" in item && "id" in item)
+          .map(item => `Marke: ${item.marke}, Model: ${item.model}, Preis: ${item.preis}, Artikel_nr: ${item.artikel_nr}, id: ${item.id}`);
+
+
         var products = {
-        "Waschmaschine": allWamaProduct,
-        "Spülmaschine": allSpulProduct,
-        "Kühlschrank": allKulProduct,
+        "waschmaschine": allWamaProduct,
+        "spülmaschine": allSpulProduct,
+        "kuehlschrank": allKulProduct,
+        "herdset": all_herdsetProduct,
+        "herdplatte": all_herdplatteProduct,
+        "standherd": all_standherdProduct,
+        "trockner": all_trocknerProduct,
+        "abzughaube": all_abzughaubeProduct,
+        "sonst": all_sonstProduct,
+
       };
 
       if (products.hasOwnProperty(productType)) {
@@ -331,7 +375,6 @@
     // Function to show the type2 field and set its value based on the selected productType
     function showType2Field() {
         var productType = document.getElementById("productType").value;
-        var type2Field = document.getElementById("type2Field");
         if (productType) {
           document.getElementById("type2").value = productType;
           console.log(document.getElementById("type2").value);

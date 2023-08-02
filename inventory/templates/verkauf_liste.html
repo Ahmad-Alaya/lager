@@ -71,6 +71,19 @@ th.desc::after {
             {{ verkauf.type_of}}
           {% elif verkauf.spuelmaschine %}
             {{ verkauf.type_of}}
+          {% elif verkauf.herdset %}
+            {{ verkauf.type_of}}
+          {% elif verkauf.herdplatte %}
+            {{ verkauf.type_of}}
+          {% elif verkauf.standherd %}
+            {{ verkauf.type_of}}
+          {% elif verkauf.trockner %}
+            {{ verkauf.type_of}}
+          {% elif verkauf.abzughaube %}
+            {{ verkauf.type_of}}
+          {% elif verkauf.sonst %}
+            {{ verkauf.type_of}}
+
           {% endif %}
         </td>
         <td>{{ verkauf.preis }}</td>
