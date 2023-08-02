@@ -281,7 +281,7 @@
           document.getElementById("artikelnummer2").value = artikel_nr;
           document.getElementById("beschreibung2").value = marke +" "+ document.getElementById("productType").value + " model Nr: "+ model ;
 
-          document.getElementById("Id2").value= id2;  //todo stoped work here this was not send to backend
+          document.getElementById("Id2").value= id2;
 
           console.log(id2); //it returns 14
           console.log(document.getElementById("Id2").value);//it returns 14
@@ -297,7 +297,7 @@
         document.getElementById("preis2Field").style.display = "block";
         document.getElementById("beschreibung2Field").style.display = "block";
       } else {
-        // Hide additional fields if no product is selected  //todo if hiden the the value for id2 should be empty and type2 also
+        // Hide additional fields if no product is selected  /
         additionalFields.forEach(function(field) {
           document.getElementById(field + "Field").style.display = "none";
         });

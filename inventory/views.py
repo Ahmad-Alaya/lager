@@ -278,7 +278,7 @@ def verkaufliste(request):
         y = (c._pagesize[1] - table_height) / 2
         t.drawOn(c, x, y)
 
-        # todo draw a line between the table and the total amount
+        # draw a line between the table and the total amount
 
         neunzehn_prozent, neunzehn_prozent_german = _two_decimal_german(end_preis-einzel_preis)
 
@@ -301,7 +301,7 @@ def verkaufliste(request):
             c.drawRightString(590, 326, f"{neunzehn_prozent_german} €")
             c.drawRightString(590, 312, f"{end_preis_german} €")
 
-        # todo draw a line obve the payment information
+        # draw a line obve the payment information
         c.line(45,66,585,66)
         # Draw payment information
         c.setFont("Helvetica-Bold", 10)
