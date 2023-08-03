@@ -154,6 +154,7 @@ def verkauf(request, id, type):
 
 @login_required
 def verkaufliste(request):
+    second_obj = False
     if request.POST:
 
         verkauf_id = request.POST.get('verkauf_id')
@@ -202,7 +203,7 @@ def verkaufliste(request):
         # pdf_name = f"{os.getcwd()}/invoice.pdf"
         c = canvas.Canvas(response, pagesize=letter)
 
-        logo_path = f"{os.getcwd()}/logo.png"
+        logo_path = f"{os.getcwd()}/lager/logo.png"
         c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
 
         c.setFont("Helvetica-Bold", 18)
