@@ -161,7 +161,7 @@ ul{color: #248e98;}
             <p>Model: {{ sons.model }}</p>
             <p>Preis: {{ sons.preis }}</p>
             <p>Anzahl: {{ sons.anzahl }}</p>
-            <p><a href="{% url 'verkauf' kuehlschran.id 'sonst'%}">Verkaufen</a></p>
+            <p><a href="{% url 'verkauf' sons.id 'sonst'%}">Verkaufen</a></p>
         </li>
     {% endfor %}
     </ul>
