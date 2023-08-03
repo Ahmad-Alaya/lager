@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p^-@5_0_4nb-uu4ca75tzsns+wetd0iw43j4_2r8!gk0n!x!@s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sarahhandel.pythonanywhere.com']
 
 LOGIN_URL = '/admin/login/?next=/admin/'
 SESSION_COOKIE_AGE = 3600
@@ -120,8 +120,8 @@ USE_TZ = True
 
 # settings.py
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = 'static/'
+
 
 
 # Default primary key field type
