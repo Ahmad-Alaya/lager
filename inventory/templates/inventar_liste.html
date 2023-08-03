@@ -174,7 +174,6 @@ ul{color: #248e98;}
 <script>
   $("#auswahlGeraet").on('change', () => {
     var x = $("#auswahlGeraet option:selected").text();
-    console.log(x)
     if (x == 'Waschmaschine') {
         $("#waschmaschine-container").show();
         $("#spuelmaschine-container").hide();
@@ -211,7 +210,7 @@ ul{color: #248e98;}
         $("#sonst-container").hide();
         $("#geraete-container").hide();
 
-    } else if (x == 'herdset'){
+    } else if (x == 'Herdset'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
@@ -222,7 +221,7 @@ ul{color: #248e98;}
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    } else if (x == 'herdplatte'){
+    } else if (x == 'Herdplatte'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
@@ -233,7 +232,7 @@ ul{color: #248e98;}
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    } else if (x == 'standherd'){
+    } else if (x == 'Standherd'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
@@ -244,7 +243,7 @@ ul{color: #248e98;}
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    }else if (x == 'trockner'){
+    }else if (x == 'Trockner'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
@@ -255,7 +254,7 @@ ul{color: #248e98;}
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    }else if (x == 'abzughaube'){
+    }else if (x == 'Abzughaube'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
@@ -266,7 +265,7 @@ ul{color: #248e98;}
         $("#abzughaube-container").show();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    }else if (x == 'sonst'){
+    }else if (x == 'Sonst'){
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
