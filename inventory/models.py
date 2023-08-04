@@ -3,10 +3,6 @@ from datetime import datetime, timedelta, timezone
 import pytz
 
 JA_NEIN_CHOICES = [
-    ('Ja','Ja'), ('Nein','Nein')
-]
-
-JA_NEIN_NS_CHOICES = [
         ('Ja', 'Ja'), ('Nein', 'Nein'), ('Nicht sicher', 'Nicht sicher')
     ]
 
@@ -39,7 +35,7 @@ class Waschmaschine(BasicInformation):
 
     ]
     fassung = models.CharField(max_length=20, choices=FASSUNG_CHOICES)
-    toploader = models.CharField(max_length=5, choices=JA_NEIN_CHOICES, default='Nein')
+    toploader = models.CharField(max_length=20, choices=JA_NEIN_CHOICES, default='Nein')
 
     def __str__(self):
         if self.preis:
@@ -97,7 +93,7 @@ class Kuehlschrank(BasicInformation):
 
 
 class Herdset(BasicInformation):
-    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES,default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
     pyrolyse = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
     umluft = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
     Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
@@ -105,16 +101,22 @@ class Herdset(BasicInformation):
 
 
 class Herdplatte(BasicInformation):
-    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
     breite = models.CharField(blank=True,null=True,max_length=100)
     Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
 
 class Standherd(BasicInformation):
-    induktion = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
-    pyrolyse = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
-    umluft = models.CharField(choices=JA_NEIN_NS_CHOICES, default="Nicht sicher", max_length=20)
+    induktion = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    pyrolyse = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
+    umluft = models.CharField(choices=JA_NEIN_CHOICES, default="Nicht sicher", max_length=20)
     Herdplatte_model = models.CharField(null=True, blank=True, max_length=200)
     Anzahl_kochfelder = models.PositiveIntegerField(blank=True, null=True)
+
+
+class Backofen(BasicInformation):
+    pyrolyse = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+    umluft = models.CharField(choices=JA_NEIN_CHOICES,default="Nicht sicher", max_length=20)
+
 
 class Trockner(BasicInformation):
     FASSUNG_CHOICES = [
@@ -122,7 +124,7 @@ class Trockner(BasicInformation):
 
     ]
     TROCKNER_ARTEN = [
-        ("Kondens", "Kondens"), ("Wärmepumpe", "Wärmepumpe"), ("other", "other"),
+        ("Kondens", "Kondens"), ("Wärmepumpe", "Wärmepumpe"), ("Ablufttrockner", "Ablufttrockner"), ("other", "other"),
 
     ]
     art = models.CharField(choices=TROCKNER_ARTEN,default="other", max_length=20)
@@ -133,7 +135,7 @@ class Abzughaube(BasicInformation):
     breite = models.CharField(blank=True,null=True,max_length=100)
 
 class Sonst(BasicInformation):
-    geraet = models.CharField(blank=True,null=True,max_length=100)
+    geraet = models.CharField(max_length=100, default=' ')
 
 class Verkauf(models.Model):
     TYPE_OF_CHOICES = [
