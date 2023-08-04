@@ -13,6 +13,7 @@
     <option value="herdset">Herdset</option>
     <option value="herdplatte">Herdplatte</option>
     <option value="standherd">Standherd</option>
+    <option value="backofen">Backofen</option>
     <option value="trockner">Trockner</option>
     <option value="abzughaube">Abzughaube</option>
     <option value="sonst">Sonst</option>
@@ -121,7 +122,19 @@ ul{color: #248e98;}
     </ul>
 </div>
 
-
+<div id="backofen-container" style="display: none">
+    <ul>
+    {% for backofe in backofen|dictsort:'marke' %}
+        <li>
+            <h2>{{ backofe.marke }}</h2>
+            <p>Model: {{ backofe.model }}</p>
+            <p>Preis: {{ backofe.preis }}</p>
+            <p>Anzahl: {{ backofe.anzahl }}</p>
+            <p><a href="{% url 'verkauf' backofe.id 'backofen'%}">Verkaufen</a></p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
 
 <div id="trockner-container" style="display: none">
     <ul>
@@ -181,6 +194,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -193,6 +207,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -205,6 +220,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -217,6 +233,7 @@ ul{color: #248e98;}
         $("#herdset-container").show();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -228,6 +245,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").show();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -239,17 +257,32 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").show();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").hide();
-    }else if (x == 'Trockner'){
+    } else if (x == 'Backofen') {
         $("#waschmaschine-container").hide();
         $("#spuelmaschine-container").hide();
         $("#kuehlschrank-container").hide();
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").show();
+        $("#trockner-container").hide();
+        $("#abzughaube-container").hide();
+        $("#sonst-container").hide();
+        $("#geraete-container").hide();
+
+    } else if (x == 'Trockner'){
+        $("#waschmaschine-container").hide();
+        $("#spuelmaschine-container").hide();
+        $("#kuehlschrank-container").hide();
+        $("#herdset-container").hide();
+        $("#herdplatte-container").hide();
+        $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").show();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
@@ -261,6 +294,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").show();
         $("#sonst-container").hide();
@@ -272,6 +306,7 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").show();
@@ -283,13 +318,13 @@ ul{color: #248e98;}
         $("#herdset-container").hide();
         $("#herdplatte-container").hide();
         $("#standherd-container").hide();
+        $("#backofen-container").hide();
         $("#trockner-container").hide();
         $("#abzughaube-container").hide();
         $("#sonst-container").hide();
         $("#geraete-container").show();
     }
   });
-
 
 </script>
 {% endblock %}

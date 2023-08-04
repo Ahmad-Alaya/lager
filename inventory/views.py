@@ -24,6 +24,7 @@ def inventar_liste(request):
     herdset = Herdset.objects.all().filter(anzahl__gt=0)
     herdplatte = Herdplatte.objects.all().filter(anzahl__gt=0)
     standherd = Standherd.objects.all().filter(anzahl__gt=0)
+    backofen = Backofen.objects.all().filter(anzahl__gt=0)
     trockner = Trockner.objects.all().filter(anzahl__gt=0)
     abzughaube = Abzughaube.objects.all().filter(anzahl__gt=0)
     sonst = Sonst.objects.all().filter(anzahl__gt=0)
@@ -37,6 +38,7 @@ def inventar_liste(request):
         "herdset": herdset,
         "herdplatte":herdplatte,
         "standherd":standherd,
+        "backofen":backofen,
         "trockner":trockner,
         "abzughaube":abzughaube,
         "sonst":sonst,
@@ -61,6 +63,8 @@ def verkauf(request, id, type):
         type_maschine = get_object_or_404(Herdplatte, pk=id)
     elif type == 'standherd':
         type_maschine = get_object_or_404(Standherd, pk=id)
+    elif type == 'backofen':
+        type_maschine = get_object_or_404(Backofen, pk=id)
     elif type == 'trockner':
         type_maschine = get_object_or_404(Trockner, pk=id)
     elif type == 'abzughaube':
@@ -110,6 +114,10 @@ def verkauf(request, id, type):
             standherd = get_object_or_404(Standherd, pk=id)
             _update_inventar(standherd, request, "Standherd", anzahl)
 
+        elif type == 'standherd':
+            backofen = get_object_or_404(Backofen, pk=id)
+            _update_inventar(backofen, request, "Backofen", anzahl)
+
         elif type == 'trockner':
             trockner = get_object_or_404(Trockner, pk=id)
             _update_inventar(trockner, request, "Trockner", anzahl)
@@ -131,6 +139,7 @@ def verkauf(request, id, type):
     all_herdset = json.dumps(list(Herdset.objects.all().values()), cls=DjangoJSONEncoder)
     all_herdplatte = json.dumps(list(Herdplatte.objects.all().values()), cls=DjangoJSONEncoder)
     all_standherd = json.dumps(list(Standherd.objects.all().values()), cls=DjangoJSONEncoder)
+    all_backofen = json.dumps(list(Backofen.objects.all().values()), cls=DjangoJSONEncoder)
     all_trockner = json.dumps(list(Trockner.objects.all().values()), cls=DjangoJSONEncoder)
     all_abzughaube = json.dumps(list(Abzughaube.objects.all().values()), cls=DjangoJSONEncoder)
     all_sonst = json.dumps(list(Sonst.objects.all().values()), cls=DjangoJSONEncoder)
@@ -146,6 +155,7 @@ def verkauf(request, id, type):
         'all_herdset': all_herdset,
         'all_herdplatte': all_herdplatte,
         'all_standherd': all_standherd,
+        'all_backofen': all_backofen,
         'all_trockner': all_trockner,
         'all_abzughaube': all_abzughaube,
         'all_sonst': all_sonst,
@@ -204,7 +214,12 @@ def verkaufliste(request):
         c = canvas.Canvas(response, pagesize=letter)
 
         logo_path = f"{os.getcwd()}/lager/logo.png"
-        c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+        try:
+            c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+        except:
+            logo_path = f"{os.getcwd()}/logo.png"
+            c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+
 
         c.setFont("Helvetica-Bold", 18)
         c.drawString(45, 720, "Sarah Handel UG")
@@ -217,6 +232,9 @@ def verkaufliste(request):
             buyer_name = 'Bonn Kunde'
         c.setFont("Helvetica-Bold", 12)
         c.drawString(45, 578, buyer_name)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(23, 460, "Rechnung")
+
         c.setFont("Helvetica", 10)
         if not buyer_street:
             buyer_street = ' '
@@ -381,6 +399,10 @@ def _update_inventar(model_obj, request, type_maschine , anzahl):
                 standherd = get_object_or_404(Standherd, pk=id2)
                 _update_inventar_2_product(verkauf, standherd, request, "Standherd", anzahl)
 
+            elif type2 == 'backofen':
+                backofen = get_object_or_404(Backofen, pk=id2)
+                _update_inventar_2_product(verkauf, backofen, request, "Backofen", anzahl)
+
             elif type2 == 'trockner':
                 trockner = get_object_or_404(Trockner, pk=id2)
                 _update_inventar_2_product(verkauf, trockner, request, "Trockner", anzahl)
@@ -423,6 +445,10 @@ def _update_inventar(model_obj, request, type_maschine , anzahl):
             elif type2 == 'standherd':
                 standherd = get_object_or_404(Standherd, pk=id2)
                 _update_inventar_2_product(verkauf, standherd, request, "Standherd", 1)
+
+            elif type2 == 'backofen':
+                backofen = get_object_or_404(Backofen, pk=id2)
+                _update_inventar_2_product(verkauf, backofen, request, "Backofen", 1)
 
             elif type2 == 'trockner':
                 trockner = get_object_or_404(Trockner, pk=id2)
