@@ -18,19 +18,19 @@ class KuehlschrankAdmin(admin.ModelAdmin):
     list_display = ['marke', 'type', 'anzahl',  'model', 'preis','farbe','note']
 
 class HerdsetAdmin(admin.ModelAdmin):
-    search_fields = ['marke', 'model', 'type',]
+    search_fields = ['marke', 'model', 'farbe',]
     list_display = ['marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
 
 class HerdplatteAdmin(admin.ModelAdmin):
-    search_fields = ['marke', 'model', 'type',]
+    search_fields = ['marke', 'model', 'farbe',]
     list_display = ['marke', 'breite', 'anzahl',  'model', 'preis','induktion', 'Anzahl_kochfelder','note']
 
 class StandherdAdmin(admin.ModelAdmin):
-    search_fields = ['marke', 'model', 'type',]
+    search_fields = ['marke', 'model', 'farbe',]
     list_display = ['marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
 
 class BackofenAdmin(admin.ModelAdmin):
-    search_fields = ['marke', 'model', 'type',]
+    search_fields = ['marke', 'model', 'farbe',]
     list_display = ['marke', 'anzahl',  'model', 'preis', 'pyrolyse', 'umluft','farbe','note']
 
 class TrocknerAdmin(admin.ModelAdmin):

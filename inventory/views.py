@@ -466,7 +466,7 @@ def _update_inventar(model_obj, request, type_maschine , anzahl):
 
 def _create_verkauf_object(model_obj, request, type_maschine, anzahl):
     verkauf_obj = Verkauf.objects.create(
-                    waschmaschine=model_obj,
+                    # waschmaschine=model_obj,
                     type_of=type_maschine,
                     menge=anzahl,
                     verkäufer=request.user.username,
