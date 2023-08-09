@@ -164,179 +164,9 @@ def verkauf(request, id, type):
 
 @login_required
 def verkaufliste(request):
-    second_obj = False
     if request.POST:
 
-        verkauf_id = request.POST.get('verkauf_id')
-        verkauf_obj = Verkauf.objects.get(id=verkauf_id)
-        buyer_name = verkauf_obj.kunde_name
-        buyer_street = verkauf_obj.kunde_strasse
-        buyer_city = verkauf_obj.kunde_city
-        rechnungsnummer = verkauf_obj.rechnungs_nr
-        rechnungsdatum = (verkauf_obj.verkaufsdatum).strftime('%d.%m.%Y')
-        falligkeitsdatum = "Sofort"
-        menge = verkauf_obj.menge
-        artikel_nr = verkauf_obj.artikel_nr
-        serial_nr = verkauf_obj.serial_number
-        preis = float(verkauf_obj.preis)
-
-
-        einzel_preis, einzel_preis_german = _two_decimal_german(preis/1.19)
-        end_preis, end_preis_german = _two_decimal_german(preis)
-
-        zahlungsart = verkauf_obj.zahlungsart
-        beschreibung = _wrap_text(verkauf_obj.beschreibung, max_length=58)
-        beschreibung_SN = beschreibung + " SN: " + str(serial_nr)
-
-
-        if verkauf_obj.beschreibung2:
-            second_obj = True
-            artikel_nr2 = verkauf_obj.artikel_nr2
-            serial_nr2 = verkauf_obj.serial_number2
-            preis2 = float(verkauf_obj.preis2)
-            einzel_preis2, einzel_preis_german2 = _two_decimal_german(preis2 / 1.19)
-            end_preis2, end_preis_german2 = _two_decimal_german(preis2)
-
-            sum_einzel_preis, sum_einzel_preis_german  = _two_decimal_german(einzel_preis + einzel_preis2)
-            sum_end_preis, sum_end_preis_german = _two_decimal_german(end_preis+end_preis2)
-
-            beschreibung2 = _wrap_text(verkauf_obj.beschreibung2, max_length=58)
-            beschreibung_SN2 = beschreibung2 + " SN: " + str(serial_nr2)
-
-
-
-        # Create PDF
-        file_name = "Sarahhandel_Rechnungsnr_" + str(rechnungsnummer) + ".pdf"
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename={file_name}'
-
-        # pdf_name = f"{os.getcwd()}/invoice.pdf"
-        c = canvas.Canvas(response, pagesize=letter)
-
-        logo_path = f"{os.getcwd()}/lager/logo.png"
-        try:
-            c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
-        except:
-            logo_path = f"{os.getcwd()}/logo.png"
-            c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
-
-
-        c.setFont("Helvetica-Bold", 18)
-        c.drawString(45, 720, "Sarah Handel UG")
-        c.setFont("Helvetica", 10)
-        c.drawString(45, 698, "Dr. Maher Hababa")
-        c.drawString(45, 684, "Carl-Troll-Straße 65, 53115 Bonn")
-        #
-        # # Add buyer information
-        if not buyer_name:
-            buyer_name = 'Bonn Kunde'
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(45, 578, buyer_name)
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(23, 460, "Rechnung")
-
-        c.setFont("Helvetica", 10)
-        if not buyer_street:
-            buyer_street = ' '
-        c.drawString(45, 564, buyer_street)
-        if not buyer_city:
-            buyer_city = ' '
-        c.drawString(45, 550, buyer_city)
-        #
-        # # Add invoice number and date
-        # c.setFont("Helvetica-Bold", 14)
-        c.drawString(394, 628, f"Rechnungsnummer : {rechnungsnummer}")
-        c.drawString(395, 616, f"Rechnungsdatum    : {rechnungsdatum}")
-        c.drawString(395, 604, f"Fälligkeitsdatum      : {falligkeitsdatum}")
-        c.drawString(394, 592, f"Zahlungsart              : {zahlungsart}")
-        #
-        # # Define the table data and its specifications
-        # if two object are available
-        if second_obj:
-            data = [
-                ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
-                [beschreibung_SN, f"{menge} Stk", artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
-                [beschreibung_SN2, f"{1} Stk", artikel_nr2, f"{einzel_preis_german2}€", "19,00 %", f"{end_preis_german2}€"],
-            ]
-        else:
-            data = [
-                ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
-                [beschreibung_SN, f"{menge} Stk",
-                 artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
-            ]
-
-        story = []
-        t = Table(data, colWidths=[312, 40, 55, 58, 55, 50])
-
-        # Add table styles
-        style = TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), '#0b5bb4'),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),  # added VALIGN attribute
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), "#cfe5f2"),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-            ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
-            ('VALIGN', (0, 1), (-1, -1), 'MIDDLE'),  # added VALIGN attribute
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
-        ])
-
-        # Apply table style and draw the table
-        t.setStyle(style)
-        story.append(t)
-        # Get table height and width
-        table_width, table_height = t.wrap(0, 0)
-
-        # Draw table on canvas
-        x = (c._pagesize[0] - table_width) / 2
-        y = (c._pagesize[1] - table_height) / 2
-        t.drawOn(c, x, y)
-
-        # draw a line between the table and the total amount
-
-        neunzehn_prozent, neunzehn_prozent_german = _two_decimal_german(end_preis-einzel_preis)
-
-        if second_obj:
-            neunzehn_prozent2, neunzehn_prozent_german2 = _two_decimal_german(end_preis2 - einzel_preis2)
-            sum_neunzehn_prozent, sum_neunzehn_prozent_german = _two_decimal_german(neunzehn_prozent+neunzehn_prozent2)
-
-        # Draw total amount
-        c.setFont("Helvetica-Bold", 10)
-        c.drawRightString(500, 340, "Gesamt (netto):")
-        c.drawRightString(500, 326, "19% USt.:")
-
-        c.drawRightString(500, 312, "Gesamt (brutto):")
-        if second_obj:
-            c.drawRightString(590, 340, f"{sum_einzel_preis_german} €")
-            c.drawRightString(590, 326, f"{sum_neunzehn_prozent_german} €")
-            c.drawRightString(590, 312, f"{sum_end_preis_german} €")
-        else:
-            c.drawRightString(590, 340, f"{einzel_preis_german} €")
-            c.drawRightString(590, 326, f"{neunzehn_prozent_german} €")
-            c.drawRightString(590, 312, f"{end_preis_german} €")
-
-        # draw a line obve the payment information
-        c.line(45,66,585,66)
-        # Draw payment information
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(45, 54, "Zahlungsinformationen:")
-        c.setFont("Helvetica", 10)
-        c.drawString(45, 42, "Bank: Kreissparkasse Köln")
-        c.drawString(45, 30, "IBAN: DE43 3705 0299 0046 0246 84")
-        c.drawString(45, 18, "BIC: COKSDE33XXX")
-
-        c.setFont("Helvetica-Bold", 10)
-        c.drawString(400, 54, "Kontaktinformation:")
-        c.setFont("Helvetica", 10)
-        c.drawString(400, 42, "E-Mail: sarahhandel@web.de")
-        c.drawString(400, 30, "Mobile: 015736622934")
-        c.drawString(400, 18, "Adresse: Carl-Troll-Str. 65, 53115 Bonn")
-
+        c,response = generate_pdf(request)
         c.save()
         print("PDF saved successfully!")
         return response
@@ -344,6 +174,189 @@ def verkaufliste(request):
 
     verkauf_list = Verkauf.objects.all()
     return render(request, 'verkauf_liste.html', {'verkauf_list': verkauf_list})
+
+
+
+def generate_pdf(request):
+    second_obj = False
+    verkauf_id = request.POST.get('verkauf_id')
+    verkauf_obj = Verkauf.objects.get(id=verkauf_id)
+    buyer_name = verkauf_obj.kunde_name
+    buyer_street = verkauf_obj.kunde_strasse
+    buyer_city = verkauf_obj.kunde_city
+    buyer_zip = verkauf_obj.kunde_plz
+    rechnungsnummer = verkauf_obj.rechnungs_nr
+    rechnungsdatum = (verkauf_obj.verkaufsdatum).strftime('%d.%m.%Y')
+    falligkeitsdatum = "Sofort"
+    menge = verkauf_obj.menge
+    artikel_nr = verkauf_obj.artikel_nr
+    serial_nr = verkauf_obj.serial_number
+    preis = float(verkauf_obj.preis)
+
+    einzel_preis, einzel_preis_german = _two_decimal_german(preis / 1.19)
+    end_preis, end_preis_german = _two_decimal_german(preis)
+
+    zahlungsart = verkauf_obj.zahlungsart
+    if str(serial_nr):
+        beschreibung_SN = verkauf_obj.beschreibung + " SN:" + str(serial_nr)
+    else:
+        beschreibung_SN = verkauf_obj.beschreibung
+    beschreibung_SN = _wrap_text(beschreibung_SN, max_length=58)
+
+    if verkauf_obj.beschreibung2:
+        second_obj = True
+        artikel_nr2 = verkauf_obj.artikel_nr2
+        serial_nr2 = verkauf_obj.serial_number2
+        preis2 = float(verkauf_obj.preis2)
+        einzel_preis2, einzel_preis_german2 = _two_decimal_german(preis2 / 1.19)
+        end_preis2, end_preis_german2 = _two_decimal_german(preis2)
+
+        sum_einzel_preis, sum_einzel_preis_german = _two_decimal_german(einzel_preis + einzel_preis2)
+        sum_end_preis, sum_end_preis_german = _two_decimal_german(end_preis + end_preis2)
+
+        if str(serial_nr2):
+            beschreibung_SN2 = verkauf_obj.beschreibung2 + " SN:" + str(serial_nr2)
+        else:
+            beschreibung_SN2 = verkauf_obj.beschreibung2
+
+        beschreibung_SN2 = _wrap_text(beschreibung_SN2, max_length=58)
+
+    # Create PDF
+    file_name = "Rechnungsnr_" + str(rechnungsnummer) + ".pdf"
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename={file_name}'
+
+    # pdf_name = f"{os.getcwd()}/invoice.pdf"
+    c = canvas.Canvas(response, pagesize=letter)
+
+    logo_path = f"{os.getcwd()}/lager/logo.png"
+    try:
+        c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+    except:
+        logo_path = f"{os.getcwd()}/logo.png"
+        c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(45, 720, "Sarah Handel UG")
+    c.setFont("Helvetica", 10)
+    c.drawString(45, 698, "Dr. Maher Hababa")
+    c.drawString(45, 684, "Carl-Troll-Straße 65, 53115 Bonn")
+    #
+    # # Add buyer information
+    if not buyer_name:
+        buyer_name = 'Bonn Kunde'
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(45, 578, buyer_name)
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(23, 460, "Rechnung")
+    c.setFont("Helvetica", 10)
+    c.drawString(23, 445, "Mit 2 Jahre Herstellergarantie")
+
+    if not buyer_street:
+        buyer_street = ' '
+    c.drawString(45, 564, buyer_street)
+    if not buyer_city:
+        buyer_city = ' '
+    if not buyer_zip:
+        buyer_zip = ' '
+    adress = buyer_zip + ' ' + buyer_city
+    c.drawString(45, 550, adress)
+    #
+    # # Add invoice number and date
+    # c.setFont("Helvetica-Bold", 14)
+    c.drawString(394, 628, f"Rechnungsnummer : {rechnungsnummer}")
+    c.drawString(395, 616, f"Rechnungsdatum    : {rechnungsdatum}")
+    c.drawString(395, 604, f"Fälligkeitsdatum      : {falligkeitsdatum}")
+    c.drawString(394, 592, f"Zahlungsart              : {zahlungsart}")
+    #
+    # # Define the table data and its specifications
+    # if two object are available
+    if second_obj:
+        data = [
+            ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
+            [beschreibung_SN, f"{menge} Stk", artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
+            [beschreibung_SN2, f"{1} Stk", artikel_nr2, f"{einzel_preis_german2}€", "19,00 %", f"{end_preis_german2}€"],
+        ]
+    else:
+        data = [
+            ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
+            [beschreibung_SN, f"{menge} Stk",
+             artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
+        ]
+
+    story = []
+    t = Table(data, colWidths=[312, 40, 55, 58, 55, 50])
+
+    # Add table styles
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), '#0b5bb4'),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),  # added VALIGN attribute
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), "#cfe5f2"),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 1), (-1, -1), 'MIDDLE'),  # added VALIGN attribute
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+    ])
+
+    # Apply table style and draw the table
+    t.setStyle(style)
+    story.append(t)
+    # Get table height and width
+    table_width, table_height = t.wrap(0, 0)
+
+    # Draw table on canvas
+    x = (c._pagesize[0] - table_width) / 2
+    y = (c._pagesize[1] - table_height) / 2
+    t.drawOn(c, x, y)
+
+    # draw a line between the table and the total amount
+
+    neunzehn_prozent, neunzehn_prozent_german = _two_decimal_german(end_preis - einzel_preis)
+
+    if second_obj:
+        neunzehn_prozent2, neunzehn_prozent_german2 = _two_decimal_german(end_preis2 - einzel_preis2)
+        sum_neunzehn_prozent, sum_neunzehn_prozent_german = _two_decimal_german(neunzehn_prozent + neunzehn_prozent2)
+
+    # Draw total amount
+    c.setFont("Helvetica-Bold", 10)
+    c.drawRightString(500, 340, "Gesamt (netto):")
+    c.drawRightString(500, 326, "19% USt.:")
+
+    c.drawRightString(500, 312, "Gesamt (brutto):")
+    if second_obj:
+        c.drawRightString(590, 340, f"{sum_einzel_preis_german} €")
+        c.drawRightString(590, 326, f"{sum_neunzehn_prozent_german} €")
+        c.drawRightString(590, 312, f"{sum_end_preis_german} €")
+    else:
+        c.drawRightString(590, 340, f"{einzel_preis_german} €")
+        c.drawRightString(590, 326, f"{neunzehn_prozent_german} €")
+        c.drawRightString(590, 312, f"{end_preis_german} €")
+
+    # draw a line obve the payment information
+    c.line(45, 66, 585, 66)
+    # Draw payment information
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(45, 54, "Zahlungsinformationen:")
+    c.setFont("Helvetica", 10)
+    c.drawString(45, 42, "Bank: Kreissparkasse Köln")
+    c.drawString(45, 30, "IBAN: DE43 3705 0299 0046 0246 84")
+    c.drawString(45, 18, "BIC: COKSDE33XXX")
+
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(400, 54, "Kontaktinformation:")
+    c.setFont("Helvetica", 10)
+    c.drawString(400, 42, "E-Mail: sarahhandel@web.de")
+    c.drawString(400, 30, "Mobile: 015736622934")
+    c.drawString(400, 18, "Adresse: Carl-Troll-Str. 65, 53115 Bonn")
+
+    return c, response
 
 
 def _wrap_text(text, max_length):
@@ -362,7 +375,7 @@ def _wrap_text(text, max_length):
     if current_line:
         lines.append(current_line.strip())
 
-    return "\n  ".join(lines)
+    return "\n".join(lines)
 
 def _update_inventar(model_obj, request, type_maschine , anzahl):
     type2 = request.POST.get('type2')
@@ -474,8 +487,8 @@ def _create_verkauf_object(model_obj, request, type_maschine, anzahl):
                     verkaufsdatum=request.POST.get('verkaufsdatum'),
                     marke=request.POST.get('marke'),
                     model=request.POST.get('model'),
-                    serial_number=request.POST.get('serial_number'),
-                    artikel_nr=request.POST.get('artikel_nr'),
+                    serial_number=request.POST.get('seriennummer'),
+                    artikel_nr=request.POST.get('artikelnummer'),
                     preis=float(request.POST.get('preis'))*float(anzahl),
                     beschreibung=request.POST.get('beschreibung'),
                     rechnungs_nr=request.POST.get('rechnungs_nr'),
@@ -521,9 +534,14 @@ def _update_verkauf_for_obj2(verkauf_obj, model_obj, request, type_maschine, anz
     if request.POST.get('beschreibung2'):
         verkauf_obj.beschreibung2 = request.POST.get('beschreibung2')
 
+
+    if request.POST.get('preis2'):
+        verkauf_obj.preis2 = request.POST.get('preis2')
+        verkauf_obj.final_preis = float(verkauf_obj.preis) + float(verkauf_obj.preis2)
+
     if not request.POST.get('preis2'):
         verkauf_obj.preis2 = float(0.0)
-        verkauf_obj.final_preis = verkauf_obj.preis + verkauf_obj.preis2
+        verkauf_obj.final_preis = float(verkauf_obj.preis) + float(verkauf_obj.preis2)
 
     return verkauf_obj
 

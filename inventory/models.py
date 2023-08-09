@@ -188,7 +188,15 @@ class Verkauf(models.Model):
     beschreibung2 = models.TextField(max_length=500, null=True, blank=True)
 
     def calculate_final_preis(self):
-        return (self.preis or 0) + (self.preis2 or 0)
+        if self.preis:
+            preis1 = float(self.preis)
+        else:
+            preis1= float(0.0)
+        if self.preis2:
+            preis2 = float(self.preis2)
+        else:
+            preis2 = float(0.0)
+        return float(preis1+preis2)
 
     final_preis = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     def save(self, *args, **kwargs):
