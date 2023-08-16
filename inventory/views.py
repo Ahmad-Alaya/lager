@@ -166,9 +166,18 @@ def verkauf(request, id, type):
 def verkaufliste(request):
     if request.POST:
 
-        c,response = generate_pdf(request)
+        if request.POST.get('herunterladen'):
+            operation_mode = 'attachment'
+        if request.POST.get('anzeigen'):
+            operation_mode = 'inline'
+
+        c,response = generate_pdf(request, operation_mode)
         c.save()
         print("PDF saved successfully!")
+
+        if request.POST.get("send_email"):
+            # send email
+            pass
         return response
 
 
@@ -177,7 +186,7 @@ def verkaufliste(request):
 
 
 
-def generate_pdf(request):
+def generate_pdf(request, operation_mode: str = 'attachment'):
     second_obj = False
     verkauf_id = request.POST.get('verkauf_id')
     verkauf_obj = Verkauf.objects.get(id=verkauf_id)
@@ -224,7 +233,7 @@ def generate_pdf(request):
     # Create PDF
     file_name = "Rechnungsnr_" + str(rechnungsnummer) + ".pdf"
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename={file_name}'
+    response['Content-Disposition'] = f'{operation_mode}; filename={file_name}'
 
     # pdf_name = f"{os.getcwd()}/invoice.pdf"
     c = canvas.Canvas(response, pagesize=letter)

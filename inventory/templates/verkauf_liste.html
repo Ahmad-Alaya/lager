@@ -105,8 +105,10 @@ th.desc::after {
           <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" onchange="confirmZahlungsdatumChange(this)">
         </td>
         <input type="hidden" name="verkauf_id" value="{{ verkauf.id }}">
-        <td><input type="submit" value="Herunterladen"></td>
+        <td><input type="submit" name="herunterladen" value="Herunterladen"></td>
+        <td><input type="submit" name="anzeigen" value="Anzeigen"></td>
         <td><a href="{% url 'admin:inventory_verkauf_change' verkauf.id %}">bearbeiten</a></td>
+        <td><button type="submit" name="send_email">Send Email</button></td>
         <td>
           <a href="#" class="delete-link">Löschen</a>
         </td>
