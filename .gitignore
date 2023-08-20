@@ -1,5 +1,4 @@
 *.sqlite3
-*inventory/__pycache__/views.cpython-39.pyc
-*lager/__pycache__/settings.cpython-39.pyc
+**/__pycache__/
 lager/settings.py
 .idea
