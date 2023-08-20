@@ -22,6 +22,7 @@ class BasicInformation(models.Model):
     farbe = models.CharField(max_length=50, null=True, blank=True)
     Beschreibung = models.TextField(max_length=5000, null=True, blank=True)
     note = models.TextField(max_length=1000, null=True, blank=True)
+    Kauf_preis = models.FloatField(null= True, blank=True)
 
 
 class Gerät(BasicInformation):
@@ -145,6 +146,7 @@ class Verkauf(models.Model):
         ('Spülmaschine', 'Spülmaschine'),
         ('Herdplatte', 'Herdplatte'),
         ('Standherd', 'Standherd'),
+        ('Backofen', 'Backofen'),
         ('Trockner', 'Trockner'),
         ('Abzughaube', 'Abzughaube'),
         ('Sonst', 'Sonst'),
