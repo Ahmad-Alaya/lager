@@ -42,6 +42,18 @@ th.desc::after {
   border-color: #000 transparent transparent;
 }
 
+/* Success message style */
+.message-success {
+  background-color: green;
+  color: white;
+}
+
+/* Error message style */
+.message-error {
+  background-color: red;
+  color: white;
+}
+
 </style>
 
 <table>
@@ -60,34 +72,21 @@ th.desc::after {
     </tr>
   </thead>
   <tbody>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     {% for verkauf in verkauf_list|dictsortreversed:'verkaufsdatum' %}
     <tr>
       <form action="{% url 'verkauf_liste' %}" method="post">
         {% csrf_token %}
-        <td>
-          {% if verkauf.waschmaschine %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.kuhlschrank %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.spuelmaschine %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.herdset %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.herdplatte %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.standherd %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.backofen %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.trockner %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.abzughaube %}
-            {{ verkauf.type_of}}
-          {% elif verkauf.sonst %}
-            {{ verkauf.type_of}}
 
-          {% endif %}
-        </td>
+{#          {% if verkauf.type_of2 %}#}
+{#          {% endif %}#}
+        <td>{{ verkauf.type_of }}</td>
         <td>{{ verkauf.final_preis }}</td>
         <td>{{ verkauf.verkaufsdatum }}</td>
         <td>{{ verkauf.zahlungsart }}</td>
@@ -95,20 +94,22 @@ th.desc::after {
         <td>{{ verkauf.rechnungs_nr }}</td>
         <td>{{ verkauf.verkäufer }}</td>
         <td>
-          <select name="bezahlt" onchange="confirmBezahltChange(this)">
+          <select name="bezahlt" onchange="confirmBezahltChange(this)" data-original-value="{{ verkauf.bezahlt }}">
             <option value="--">--</option>
             <option value="Ja" {% if verkauf.bezahlt == 'Ja' %}selected{% endif %}>Ja</option>
             <option value="Nein" {% if verkauf.bezahlt == 'Nein' %}selected{% endif %}>Nein</option>
           </select>
+          <input type="submit" name="submit_bezahlt" style="display: none;">
         </td>
         <td>
-          <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" onchange="confirmZahlungsdatumChange(this)">
+            <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" onchange="confirmZahlungsdatumChange(this)" data-original-value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}">
+            <input type="submit" name="submit_zahlungsdatum" style="display: none;">
         </td>
         <input type="hidden" name="verkauf_id" value="{{ verkauf.id }}">
         <td><input type="submit" name="herunterladen" value="Herunterladen"></td>
         <td><input type="submit" name="anzeigen" value="Anzeigen"></td>
         <td><a href="{% url 'admin:inventory_verkauf_change' verkauf.id %}">bearbeiten</a></td>
-        <!-- <td><button type="submit" name="send_email">Send Email</button></td> -->
+        <td><button type="submit" name="send_email" value="send_email">Email senden</button></td>
         <td>
           <a href="#" class="delete-link">Löschen</a>
         </td>
@@ -140,24 +141,37 @@ let originalBezahltValue = '{{ verkauf.bezahlt }}';
   let originalZahlungsdatumValue = '{{ verkauf.zahlungsdatum | date:'Y-m-d' }}';
 
   function confirmBezahltChange(selectElement) {
-    const newValue = selectElement.value;
-    const confirmation = confirm(`Are you sure you want to change "Bezahlt" to "${newValue}"?`);
-    if (confirmation) {
-      originalBezahltValue = newValue; // Update the original value
-    } else {
-      selectElement.value = originalBezahltValue; // Reset the select element to the original value
-    }
+  const newValue = selectElement.value;
+  const originalValue = selectElement.getAttribute('data-original-value');
+  const confirmation = confirm(`Are you sure you want to change "Bezahlt" to "${newValue}"?`);
+
+  if (confirmation) {
+    // Update the original value and submit the form
+    selectElement.setAttribute('data-original-value', newValue);
+    const submitButton = selectElement.parentNode.querySelector('input[name="submit_bezahlt"]');
+    submitButton.click();
+
+  } else {
+    // Reset the select element to the original value
+    selectElement.value = originalValue;
   }
+}
 
   function confirmZahlungsdatumChange(inputElement) {
-    const newValue = inputElement.value;
-    const confirmation = confirm(`Are you sure you want to change "Zahlungsdatum" to "${newValue}"?`);
-    if (confirmation) {
-      originalZahlungsdatumValue = newValue; // Update the original value
-    } else {
-      inputElement.value = originalZahlungsdatumValue; // Reset the input element to the original value
-    }
+  const newValue = inputElement.value;
+  const originalValue = inputElement.getAttribute('data-original-value');
+  const confirmation = confirm(`Are you sure you want to change "Zahlungsdatum" to "${newValue}"?`);
+
+  if (confirmation) {
+    // Update the original value and submit the form
+    inputElement.setAttribute('data-original-value', newValue);
+    const submitButtonDatum = inputElement.parentNode.querySelector('input[name="submit_zahlungsdatum"]');
+    submitButtonDatum.click();
+  } else {
+    // Reset the input element to the original value
+    inputElement.value = originalValue;
   }
+}
 
 </script>
 
@@ -227,6 +241,32 @@ let originalBezahltValue = '{{ verkauf.bezahlt }}';
   document.querySelectorAll('th').forEach((header, index) => {
     header.addEventListener('click', () => sortTable(index));
   });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const messages = document.querySelectorAll('.message');
+
+  messages.forEach(message => {
+    // Check if the message has a success or error class
+    if (message.classList.contains('success')) {
+      message.classList.add('message-success');
+    } else if (message.classList.contains('error')) {
+      message.classList.add('message-error');
+    }
+
+    // Automatically remove messages after 5 seconds
+    setTimeout(() => {
+      message.style.opacity = '0';
+      setTimeout(() => {
+        message.remove();
+      }, 1000); // Remove after fade-out animation duration
+    }, 5000); // 5 seconds
+  });
+});
+
+
 </script>
+
+
 
 {% endblock %}

@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage
 from django.shortcuts import render, redirect, get_object_or_404
 from inventory.models import *
 from django.http import HttpResponse
@@ -12,6 +13,8 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 
 
@@ -166,29 +169,86 @@ def verkauf(request, id, type):
 def verkaufliste(request):
     if request.POST:
 
-        if request.POST.get('herunterladen'):
-            operation_mode = 'attachment'
+
+        operation_mode = 'attachment'
         if request.POST.get('anzeigen'):
             operation_mode = 'inline'
 
-        c,response = generate_pdf(request, operation_mode)
+        verkauf_id = request.POST.get('verkauf_id')
+        c,response = generate_pdf(verkauf_id, operation_mode)
         c.save()
         print("PDF saved successfully!")
 
         if request.POST.get("send_email"):
-            # send email
-            pass
+            request.session['verkauf_id'] = verkauf_id
+            return redirect("send_email")
         return response
 
 
     verkauf_list = Verkauf.objects.all()
     return render(request, 'verkauf_liste.html', {'verkauf_list': verkauf_list})
 
+def send_email(request):
+    verkauf_id = request.session.get('verkauf_id')
+    if request.POST:
+
+        kunde_email = str(request.POST.get('email'))
+        message = request.POST.get('message')
+        subject = request.POST.get('subject')
+        # Handle the uploaded PDF file
+
+        # pdf_file = request.FILES.get('pdf_file')
+        # pdf_content = pdf_file.read()
+        c, pdf_response = generate_pdf(verkauf_id, operation_mode='attachment')
+        c.save()
+        if request.POST.get('kopie_mail') == 'on':
+            reciver_mail = [kunde_email,'sarahhandel_ahmad@web.de']
+        else:
+            reciver_mail = [kunde_email]
+        email_obj = EmailMessage(subject, message, 'sarahhandel_ahmad@web.de', reciver_mail)
+        # witz :) ersetze erste param to 'Rechnung'
+        email_obj.attach(pdf_response.headers._store.get('content-disposition')[1].split("=")[1], pdf_response.content, 'application/pdf')
+        try:
+            # Attempt to send the email
+            success_count = email_obj.send(fail_silently=False)
+
+            if success_count > 0:
+                messages.success(request, 'Email sent successfully!')
+            else:
+                messages.error(request, 'Failed to send email. Please try again later.')
+
+            return redirect('verkauf_liste')
+
+        except Exception as e:
+            messages.error(request, f'An error occurred while sending the email: {str(e)}')
+            return redirect('verkauf_liste')
 
 
-def generate_pdf(request, operation_mode: str = 'attachment'):
+    else:
+
+        verkauf_obj = Verkauf.objects.get(id=verkauf_id)
+        kunde_email = verkauf_obj.kunde_email
+        if not kunde_email:
+            kunde_email = " "
+        message = "Sehr geehrte Damen und Herren,\n\nwir hoffen, Sie hatten eine großartige Erfahrung beim Einkaufen bei uns.\n\n" \
+                  "Anbei finden Sie die Rechnung für Ihren Einkauf.\n\n" \
+                  "Bitte zögern Sie nicht, sich bei uns zu melden, falls Sie Fragen oder Anmerkungen haben." \
+                  " Wir stehen Ihnen gerne zur Verfügung, um Ihnen weiterzuhelfen.\n\n" \
+                  "Wir freuen uns auf Ihre Bewertung und hoffen, Sie bald wieder bei uns begrüßen zu dürfen.\n\n" \
+                  "https://maps.app.goo.gl/jgxZXcNxKi3G23M8A\n\n" \
+                  "Mit freundlichen Grüßen\n" \
+                  "Sarahhandel UG"
+        subject = "Rechnung"
+    context = {
+        'subject': subject,
+        'message': message,
+        'email': kunde_email,
+        'rechnung_pdf': 'pdf_response',
+    }
+    return render(request, 'email_preview.html',context)
+
+def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
     second_obj = False
-    verkauf_id = request.POST.get('verkauf_id')
     verkauf_obj = Verkauf.objects.get(id=verkauf_id)
     buyer_name = verkauf_obj.kunde_name
     buyer_street = verkauf_obj.kunde_strasse
@@ -487,8 +547,12 @@ def _update_inventar(model_obj, request, type_maschine , anzahl):
     return redirect('verkauf_liste')
 
 def _create_verkauf_object(model_obj, request, type_maschine, anzahl):
+    try:
+        kauf_preis = model_obj.Kauf_preis
+    except:
+        kauf_preis = float(0.0)
     verkauf_obj = Verkauf.objects.create(
-                    # waschmaschine=model_obj,
+
                     type_of=type_maschine,
                     menge=anzahl,
                     verkäufer=request.user.username,
@@ -507,6 +571,7 @@ def _create_verkauf_object(model_obj, request, type_maschine, anzahl):
                     kunde_city=request.POST.get('kunde_city'),
                     kunde_email=request.POST.get('kunde_email'),
                     kunde_mobile=request.POST.get('kunde_mobile'),
+                    kapital = kauf_preis
                 )
     return verkauf_obj
 
@@ -525,6 +590,13 @@ def _update_inventar_2_product(verkauf_obj, model_obj, request, type_maschine , 
 
 
 def _update_verkauf_for_obj2(verkauf_obj, model_obj, request, type_maschine, anzahl):
+    try:
+        kauf_preis2 = model_obj.Kauf_preis
+        verkauf_obj.kapital2 = kauf_preis2
+    except:
+        kauf_preis2 = float(0.0)
+        verkauf_obj.kapital2 = kauf_preis2
+
     verkauf_obj.type_of2 = type_maschine
     verkauf_obj.menge2 = anzahl
 

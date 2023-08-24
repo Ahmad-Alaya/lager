@@ -138,7 +138,21 @@ class Abzughaube(BasicInformation):
 class Sonst(BasicInformation):
     geraet = models.CharField(max_length=100, default=' ')
 
+
+class Einstellungen(models.Model):
+    email_message = models.CharField(max_length=10000, null=True, blank=True)
+    rechnung_note = models.CharField(max_length=100, null=True, blank=True,default="Mit 2 Jahre Herstellergarantie")
+    bank_name = models.CharField(max_length=100, null=True, blank=True)
+    bank_iban = models.CharField(max_length=100, null=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    absender = models.CharField(max_length=100, null=True, blank=True)
+
 class Verkauf(models.Model):
+    CHOICES = [
+        ('Ja','Ja'),
+        ('Nein','Nein'),
+        ('---','---')
+    ]
     TYPE_OF_CHOICES = [
         ('Waschmaschine','Waschmaschine'),
         ('Kühlschrank', 'Kühlschrank'),
@@ -154,16 +168,18 @@ class Verkauf(models.Model):
 
     ]
 
-    gerät = models.ForeignKey(Gerät, on_delete=models.SET_NULL, null=True, blank=True)
-    waschmaschine = models.ForeignKey(Waschmaschine, on_delete=models.SET_NULL, null=True, blank=True)
-    kuhlschrank = models.ForeignKey(Kuehlschrank, on_delete=models.SET_NULL, null=True, blank=True)
-    spuelmaschine= models.ForeignKey(Spuelmaschine, on_delete=models.SET_NULL, null=True, blank= True)
+    # gerät = models.ForeignKey(Gerät, on_delete=models.SET_NULL, null=True, blank=True)
+    # waschmaschine = models.ForeignKey(Waschmaschine, on_delete=models.SET_NULL, null=True, blank=True)
+    # kuhlschrank = models.ForeignKey(Kuehlschrank, on_delete=models.SET_NULL, null=True, blank=True)
+    # spuelmaschine= models.ForeignKey(Spuelmaschine, on_delete=models.SET_NULL, null=True, blank= True)
     verkäufer = models.CharField(max_length=255)
-    type_of = models.CharField(max_length=200, choices=TYPE_OF_CHOICES)
+    type_of = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, verbose_name="Gerät")
     menge = models.IntegerField()
 
     zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
     verkaufsdatum = models.DateTimeField(editable=True,default=datetime.now)
+    bezahlt = models.CharField(max_length=20, choices=CHOICES, default='---')
+    zahlungsdatum = models.DateTimeField(null=True,blank=True)
     marke = models.CharField(max_length=50, null=True, blank=True)
     model = models.CharField(max_length=100)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
@@ -180,7 +196,7 @@ class Verkauf(models.Model):
     kunde_mobile = models.CharField(max_length=100, null=True, blank=True)
 
 
-    type_of2 = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, null=True, blank=True)
+    type_of2 = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, null=True, blank=True, verbose_name="Gerät2")
     menge2 = models.IntegerField(null=True, blank=True)
     marke2 = models.CharField(max_length=50, null=True, blank=True)
     model2 = models.CharField(max_length=100, null=True, blank=True)
@@ -188,6 +204,8 @@ class Verkauf(models.Model):
     artikel_nr2 = models.CharField(max_length=50, null=True, blank=True)
     preis2 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     beschreibung2 = models.TextField(max_length=500, null=True, blank=True)
+    kapital = models.FloatField(null= True, blank=True, verbose_name="Kauf preis (intern 1.Gerät)")
+    kapital2 = models.FloatField(null=True, blank=True, verbose_name="Kauf preis2 (intern 2.Gerät)")
 
     def calculate_final_preis(self):
         if self.preis:
@@ -200,7 +218,19 @@ class Verkauf(models.Model):
             preis2 = float(0.0)
         return float(preis1+preis2)
 
+    def calculate_gewinn(self):
+        diff = float(0.0)
+        if self.final_preis:
+            if self.kapital:
+                diff = float(self.final_preis) - float(self.kapital)
+                if self.kapital2:
+                    diff -= self.kapital2
+        return float(diff)
+
+
     final_preis = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    gewinn = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     def save(self, *args, **kwargs):
         self.final_preis = self.calculate_final_preis()
+        self.gewinn = self.calculate_gewinn()
         super(Verkauf, self).save(*args, **kwargs)

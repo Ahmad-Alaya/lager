@@ -188,6 +188,10 @@
       var productType = document.getElementById("productType").value;
       var productDropdown = document.getElementById("product");
       productDropdown.innerHTML = ""; // Clear existing options
+      var defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "---";
+      productDropdown.appendChild(defaultOption);
 
         var allWama = {{ all_waschmaschinen|safe }};
         var allSpul = {{ all_spuelmaschinen|safe }};
