@@ -1,6 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local development settings
 *.sqlite3
-**/__pycache__/
-lager/settings.py
-.idea
+*.db
+
+# Log files
+*.log
+
+# Media files (uploads)
+media/
+
+# Static files (collectstatic)
+static/
+
+# Virtual environment
+venv/
 .env
-.xml
+
+# Compiled Python files
+*.pyc
+*.pyo
+
+# macOS folder attributes
+.DS_Store
+
+# Editor-specific files
+.idea/
+.vscode/
+
+# Compiled Node.js modules
+node_modules/
+
+# Compiled TypeScript files
+*.tsbuildinfo
+*.tsbak
+
+# Docker-compose
+docker-compose.yml
+docker-compose.override.yml
