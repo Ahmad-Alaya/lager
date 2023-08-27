@@ -247,6 +247,56 @@ def send_email(request):
     }
     return render(request, 'email_preview.html',context)
 
+
+def statistic(request):
+    waschmaschienen = Waschmaschine.objects.all()
+    kuehlschraenke = Kuehlschrank.objects.all()
+    trockner = Trockner.objects.all()
+    herdsets = Herdset.objects.all()
+    herdplatte = Herdplatte.objects.all()
+    backofen = Backofen.objects.all()
+    standherd = Standherd.objects.all()
+    spuelmaschine = Spuelmaschine.objects.all()
+    sonst = Sonst.objects.all()
+    abzughaube = Abzughaube.objects.all()
+    Kategorien = [waschmaschienen, kuehlschraenke, trockner, herdsets, herdplatte, backofen, standherd, spuelmaschine, sonst,
+            abzughaube]
+
+    statistic_dict = {}
+    missing_data = []
+    for Kategorie in Kategorien:
+        category_name = Kategorie.model._meta.model_name
+        statistic_dict[category_name] = {}
+
+        for obj in Kategorie:
+            model_name = str(obj.model)
+            if obj.Kauf_preis:
+                kauf_preis = obj.Kauf_preis
+                anzahl = obj.anzahl
+                statistic_dict[category_name][model_name] = {'kauf_preis':kauf_preis,
+                                                             'anzahl': anzahl,
+                                                             'total_preis': float(kauf_preis)*float(anzahl)}
+            else:
+                missing_data.append((Kategorie.model._meta.model_name,model_name,obj))
+
+    total_all_total_preis = 0
+    total_all_total_amount = 0
+    for category, models in statistic_dict.items():
+        total_preis = sum(model_data['total_preis'] for model_data in models.values())
+        total_amount = sum(model_data['anzahl'] for model_data in models.values())
+        models['total_preis'] = round(total_preis,2)
+        models['total_amount'] = total_amount
+        total_all_total_preis += total_preis
+        total_all_total_amount += total_amount
+
+
+    context = {'statistic_dict': statistic_dict,
+               'total_all_total_preis': round(total_all_total_preis,2),
+               'total_all_total_amount': total_all_total_amount,
+               'missing_data': missing_data,
+               }
+    return render(request, 'statistic.html', context)
+
 def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
     second_obj = False
     verkauf_obj = Verkauf.objects.get(id=verkauf_id)
