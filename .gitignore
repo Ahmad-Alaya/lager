@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.pyc
 # Local development settings
 *.sqlite3
 *.db
