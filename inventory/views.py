@@ -175,14 +175,32 @@ def verkaufliste(request):
             operation_mode = 'inline'
 
         verkauf_id = request.POST.get('verkauf_id')
-        c,response = generate_pdf(verkauf_id, operation_mode)
-        c.save()
-        print("PDF saved successfully!")
+
+        if request.POST.get("anzeigen") or request.POST.get("herunterladen"):
+            c,response = generate_pdf(verkauf_id, operation_mode)
+            c.save()
+            print("PDF saved successfully!")
+            return response
 
         if request.POST.get("send_email"):
             request.session['verkauf_id'] = verkauf_id
             return redirect("send_email")
-        return response
+
+        if request.POST.get("submit_bezahlt"):
+            verk_obj = Verkauf.objects.get(id=verkauf_id)
+            verk_obj.bezahlt = request.POST.get("bezahlt")
+            if request.POST.get("bezahlt") == "Nein" or request.POST.get("bezahlt") == "---":
+                verk_obj.zahlungsdatum = None
+            verk_obj.save()
+
+        if request.POST.get("submit_zahlungsdatum"):
+            verk_obj = Verkauf.objects.get(id=verkauf_id)
+            if datetime.strptime(request.POST.get("zahlungsdatum"), "%Y-%m-%d") > datetime.now():
+                messages.error(request, "Wrong date, you can not pay in the future")
+            else:
+                verk_obj.zahlungsdatum = request.POST.get("zahlungsdatum")
+                verk_obj.bezahlt = "Ja"
+                verk_obj.save()
 
 
     verkauf_list = Verkauf.objects.all()

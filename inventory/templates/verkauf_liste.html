@@ -54,6 +54,20 @@ th.desc::after {
   color: white;
 }
 
+/* Add these styles at the end of your <style> section */
+
+.bezahlt-color-ja {
+  background-color: green;
+}
+
+.bezahlt-color-nein {
+  background-color: red;
+}
+
+.bezahlt-color--- {
+  background-color: yellow;
+}
+
 </style>
 
 <table>
@@ -95,14 +109,14 @@ th.desc::after {
         <td>{{ verkauf.verkäufer }}</td>
         <td>
           <select name="bezahlt" onchange="confirmBezahltChange(this)" data-original-value="{{ verkauf.bezahlt }}">
-            <option value="--">--</option>
+            <option value="---" {% if verkauf.bezahlt == '---' %}selected{% endif %}>---</option>
             <option value="Ja" {% if verkauf.bezahlt == 'Ja' %}selected{% endif %}>Ja</option>
             <option value="Nein" {% if verkauf.bezahlt == 'Nein' %}selected{% endif %}>Nein</option>
           </select>
           <input type="submit" name="submit_bezahlt" style="display: none;">
         </td>
         <td>
-            <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" onchange="confirmZahlungsdatumChange(this)" data-original-value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}">
+            <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-d-m' }}" onchange="confirmZahlungsdatumChange(this)" data-original-value="{{ verkauf.zahlungsdatum | date:'Y-d-m' }}">
             <input type="submit" name="submit_zahlungsdatum" style="display: none;">
         </td>
         <input type="hidden" name="verkauf_id" value="{{ verkauf.id }}">
@@ -264,9 +278,37 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Add this at the beginning of your last <script> section
+
+function updateBezahltColor(selectElement) {
+  const value = selectElement.value;
+
+  // Reset all color classes
+  selectElement.classList.remove('bezahlt-color-ja', 'bezahlt-color-nein', 'bezahlt-color---');
+
+  // Set the appropriate color class
+  if (value === 'Ja') {
+    selectElement.classList.add('bezahlt-color-ja');
+  } else if (value === 'Nein') {
+    selectElement.classList.add('bezahlt-color-nein');
+  } else if (value === '---') {
+    selectElement.classList.add('bezahlt-color---');
+  }
+}
+
+// This will automatically set the color when the page is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  const bezahltSelects = document.querySelectorAll('select[name="bezahlt"]');
+  bezahltSelects.forEach(select => {
+    updateBezahltColor(select);
+
+    // Also add an event listener to change color when the select value is changed
+    select.addEventListener('change', function() {
+      updateBezahltColor(this);
+    });
+  });
+});
 
 </script>
-
-
 
 {% endblock %}
