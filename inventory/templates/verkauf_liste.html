@@ -116,7 +116,7 @@ th.desc::after {
           <input type="submit" name="submit_bezahlt" style="display: none;">
         </td>
         <td>
-            <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-d-m' }}" onchange="confirmZahlungsdatumChange(this)" data-original-value="{{ verkauf.zahlungsdatum | date:'Y-d-m' }}">
+            <input type="date" name="zahlungsdatum" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" onchange="confirmZahlungsdatumChange(this)" data-original-value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}">
             <input type="submit" name="submit_zahlungsdatum" style="display: none;">
         </td>
         <input type="hidden" name="verkauf_id" value="{{ verkauf.id }}">
