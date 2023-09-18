@@ -6,44 +6,44 @@ basic_field=['marke', 'anzahl','preis','']
 
 class WaschmaschineAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'fassung', 'preis',]
-    list_display = ['marke', 'fassung', 'anzahl', 'model','toploader','preis','farbe','note']
+    list_display = ['zustand', 'marke', 'fassung', 'anzahl', 'model','toploader','preis','farbe','note']
 
 
 class SpuelmaschineAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'breite', 'art']
-    list_display = ["marke", "breite", 'art', 'anzahl',  'model', 'preis','farbe','note']
+    list_display = ['zustand', "marke", "breite", 'art', 'anzahl',  'model', 'preis','farbe','note']
 
 class KuehlschrankAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'type']
-    list_display = ['marke', 'type', 'anzahl',  'model', 'preis','farbe','note']
+    list_display = ['zustand', 'marke', 'type', 'anzahl',  'model', 'preis','farbe','note']
 
 class HerdsetAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'farbe',]
-    list_display = ['marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
+    list_display = ['zustand', 'marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
 
 class HerdplatteAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'farbe',]
-    list_display = ['marke', 'breite', 'anzahl',  'model', 'preis','induktion', 'Anzahl_kochfelder','note']
+    list_display = ['zustand', 'marke', 'breite', 'anzahl',  'model', 'preis','induktion', 'Anzahl_kochfelder','note']
 
 class StandherdAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'farbe',]
-    list_display = ['marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
+    list_display = ['zustand', 'marke', 'anzahl',  'model', 'preis','induktion','pyrolyse', 'Anzahl_kochfelder','umluft','farbe','note']
 
 class BackofenAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'farbe',]
-    list_display = ['marke', 'anzahl',  'model', 'preis', 'pyrolyse', 'umluft','farbe','note']
+    list_display = ['zustand', 'marke', 'anzahl',  'model', 'preis', 'pyrolyse', 'umluft','farbe','note']
 
 class TrocknerAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'fassung', 'preis',]
-    list_display = ['marke', 'fassung', 'anzahl', 'model','art','preis','note']
+    list_display = ['zustand', 'marke', 'fassung', 'anzahl', 'model','art','preis','note']
 
 class AbzughaubeAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'fassung', 'preis',]
-    list_display = ['marke', 'anzahl', 'model','art','preis', 'breite','farbe','note']
+    list_display = ['zustand', 'marke', 'anzahl', 'model','art','preis', 'breite','farbe','note']
 
 class SonstAdmin(admin.ModelAdmin):
     search_fields = ['marke', 'model', 'fassung', 'preis',]
-    list_display = ['geraet','marke', 'anzahl', 'model','preis',]
+    list_display = ['zustand', 'geraet','marke', 'anzahl', 'model','preis',]
 
 class VerkaufAdmin(admin.ModelAdmin):
     search_fields = ['marke','rechnungs_nr', 'verkaufsdatum', 'preis']

@@ -9,7 +9,12 @@ JA_NEIN_CHOICES = [
 ZAHLUNGSART_CHOICES = [
     ('Bar','Bar'), ('Überweisung','Überweisung')
 ]
+
+ZUSTAND_CHOICES = [
+    ("Neu", "Neu"), ("Gebraucht", "Gebraucht")
+]
 class BasicInformation(models.Model):
+    zustand = models.CharField(choices=ZUSTAND_CHOICES, default="Neu", max_length=20)
     marke = models.CharField(max_length=50)
     model = models.CharField(max_length=100,unique=True)
     anzahl = models.IntegerField(default=1)
@@ -175,7 +180,8 @@ class Verkauf(models.Model):
     verkäufer = models.CharField(max_length=255)
     type_of = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, verbose_name="Gerät")
     menge = models.IntegerField()
-
+    zustand = models.CharField(choices=ZUSTAND_CHOICES, default="Neu", max_length=20)
+    zusaetzlich = models.CharField(max_length=100, default="Mit 2 Jahre Herstellergarantie", verbose_name="zusätzlich")
     zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
     verkaufsdatum = models.DateTimeField(editable=True,default=datetime.now)
     bezahlt = models.CharField(max_length=20, choices=CHOICES, default='---')

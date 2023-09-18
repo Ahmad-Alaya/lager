@@ -117,7 +117,7 @@ def verkauf(request, id, type):
             standherd = get_object_or_404(Standherd, pk=id)
             _update_inventar(standherd, request, "Standherd", anzahl)
 
-        elif type == 'standherd':
+        elif type == 'backofen':
             backofen = get_object_or_404(Backofen, pk=id)
             _update_inventar(backofen, request, "Backofen", anzahl)
 
@@ -329,6 +329,7 @@ def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
     artikel_nr = verkauf_obj.artikel_nr
     serial_nr = verkauf_obj.serial_number
     preis = float(verkauf_obj.preis)
+    zusaetzlich = verkauf_obj.zusaetzlich
 
     einzel_preis, einzel_preis_german = _two_decimal_german(preis / 1.19)
     end_preis, end_preis_german = _two_decimal_german(preis)
@@ -387,7 +388,7 @@ def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
     c.setFont("Helvetica-Bold", 16)
     c.drawString(23, 460, "Rechnung")
     c.setFont("Helvetica", 10)
-    c.drawString(23, 445, "Mit 2 Jahre Herstellergarantie")
+    c.drawString(23, 445, zusaetzlich)
 
     if not buyer_street:
         buyer_street = ' '
@@ -639,7 +640,8 @@ def _create_verkauf_object(model_obj, request, type_maschine, anzahl):
                     kunde_city=request.POST.get('kunde_city'),
                     kunde_email=request.POST.get('kunde_email'),
                     kunde_mobile=request.POST.get('kunde_mobile'),
-                    kapital = kauf_preis
+                    kapital = kauf_preis,
+                    zusaetzlich=request.POST.get('zusätzlich'),
                 )
     return verkauf_obj
 

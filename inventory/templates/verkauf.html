@@ -89,13 +89,11 @@
     {% else %}
       <div class="form-group">
         <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis" class="form-control">
+        <input type="number" step="0.01" id="preis" name="preis" class="form-control" required>
       </div>
     {% endif %}
 
     {% if gerät.Beschreibung %}
-        <script>
-        </script>
       <div class="form-group">
         <label for="beschreibung">Beschreibung:</label>
         <textarea id="beschreibung" name="beschreibung" class="form-control"  required>{{ gerät.Beschreibung }}</textarea>
@@ -105,6 +103,19 @@
         <label for="beschreibung">Beschreibung:</label>
         <textarea id="beschreibung" name="beschreibung" class="form-control" required></textarea>
       </div>
+    {% endif %}
+
+    {% if gerät.zustand == "Neu" %}
+      <div class="form-group">
+        <label for="zusätzlich">Zusätzlich:</label>
+        <textarea id="zusätzlich" name="zusätzlich" class="form-control"  required>Mit 2 Jahre Herstellergarantie</textarea>
+      </div>
+    {% else %}
+      <div class="form-group">
+        <label for="zusätzlich">Zusätzlich:</label>
+        <textarea id="zusätzlich" name="zusätzlich" class="form-control"  required>Mit 6 Monate Herstellergarantie</textarea>
+      </div>
+    {% endif %}
       <script>
         // Get the current URL of the page
         var currentURL = window.location.href;
@@ -116,7 +127,6 @@
         console.log(textareaElement)
         textareaElement.value = "{{gerät.marke}} " + geraeteType + " model Nr: "+ "{{ gerät.model }}";
         </script>
-    {% endif %}
 
     <div class="form-group">
       <label for="rechnungs_nr">Rechnungsnummer:</label>
