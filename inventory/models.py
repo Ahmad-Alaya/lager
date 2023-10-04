@@ -7,7 +7,7 @@ JA_NEIN_CHOICES = [
     ]
 
 ZAHLUNGSART_CHOICES = [
-    ('Bar','Bar'), ('Überweisung','Überweisung')
+    ('Bar','Bar'), ('Karte', 'Karte'), ('Überweisung','Überweisung')
 ]
 
 ZUSTAND_CHOICES = [
