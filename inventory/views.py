@@ -14,8 +14,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
-
+# import pandas as pd
 
 
 @login_required
@@ -220,10 +219,10 @@ def send_email(request):
         c, pdf_response = generate_pdf(verkauf_id, operation_mode='attachment')
         c.save()
         if request.POST.get('kopie_mail') == 'on':
-            reciver_mail = [kunde_email,'sarahhandel_ahmad@web.de']
+            reciver_mail = [kunde_email,'sarahhandel@web.de']
         else:
             reciver_mail = [kunde_email]
-        email_obj = EmailMessage(subject, message, 'sarahhandel_ahmad@web.de', reciver_mail)
+        email_obj = EmailMessage(subject, message, 'sarahhandel@web.de', reciver_mail)
         # witz :) ersetze erste param to 'Rechnung'
         email_obj.attach(pdf_response.headers._store.get('content-disposition')[1].split("=")[1], pdf_response.content, 'application/pdf')
         try:
