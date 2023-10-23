@@ -272,6 +272,7 @@ def statistic(request):
     if request.POST:
         date_from = datetime.strptime(request.POST.get("dateFrom"), "%Y-%m-%d")
         date_to = datetime.strptime(request.POST.get("dateTo"), "%Y-%m-%d")
+        date_to.replace(hour=23, minute=59, second=59)
         payment_type = request.POST.get("paymentType")
 
         if payment_type == "Bar":
