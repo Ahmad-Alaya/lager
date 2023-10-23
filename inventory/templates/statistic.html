@@ -1,73 +1,74 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
+
+{% block content %}
 <head>
-    <title>Statistics</title>
-</head>
-<body>
+    <title>Statistic</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Some basic styles for the form */
+        .input-group {
+            margin-bottom: 20px;
         }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border: 2px solid #333;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #ddd;
+        .input-group label {
+            margin-right: 10px;
         }
     </style>
-    <h1>Product Statistics</h1>
-    <p>Stücke: {{ total_all_total_amount }}</p>
-    <p>Total of Preise: {{ total_all_total_preis }}</p>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Model</th>
-                <th>Kauf_preis</th>
-                <th>Anzahl</th>
-                <th>Total Preis</th>
-            </tr>
-        </thead>
-        <tbody>
-            <p>Diese Ware haben noch kein Kaufpreis: </p>
-            <p>{{ missing_data }}</p>
+</head>
+<body>
+    <h1>Statistics</h1>
 
-            {% for category, models in statistic_dict.items %}
-                <tr>
-                    <td rowspan="{{ models|length|add:'2' }}">{{ category }}</td>
-                </tr>
-                {% for model, data in models.items %}
-                    <tr>
-                        <td>{{ model }}</td>
-                        <td>{{ data.kauf_preis }}</td>
-                        <td>{{ data.anzahl }}</td>
-                        <td>{{ data.total_preis }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="3">Total Count:</td>
-                    <td>{{ models.total_amount }}</td>
-                    <td>{{ models.total_preis }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <form action="{% url 'statistic' %}" method="post">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label for="dateFrom">Date From:</label>
+            <input type="date" id="dateFrom" name="dateFrom" required value="{{ request.POST.dateFrom }}">
+        </div>
+
+        <div class="input-group">
+            <label for="dateTo">Date To:</label>
+            <input type="date" id="dateTo" name="dateTo" required value="{{ request.POST.dateTo }}">
+        </div>
+
+        <div class="input-group">
+            <label for="paymentType">Payment Type:</label>
+            <select id="paymentType" name="paymentType" required>
+                <option value="Bar" {% if request.POST.paymentType == "Bar" %}selected{% endif %}>Bar</option>
+                <option value="Karte/Überweisung" {% if request.POST.paymentType == "Karte/Überweisung" %}selected{% endif %}>Karte/Überweisung</option>
+                <option value="Beide" {% if request.POST.paymentType == "Beide" %}selected{% endif %}>Beide</option>
+            </select>
+        </div>
+
+
+        <button type="submit">Get Statistics</button>
+
+        {% if summe %}
+            <h1>Es wurden {{ stk }} Rechnungen erstellt für: {{ summe }} €</h1>
+            <button type="submit" name="show_detail" value="1">Show Me Detail</button>
+            <button type="submit" name="export_excel" value="1">Export As Excel</button>
+            <h1></h1>
+
+            {% if table %}
+                <table border="1">
+                    <thead>
+                        <tr>
+                            {% for header in table.headers %}
+                            <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table.data %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endif %}
+
+    </form>
 </body>
-</html>
+{% endblock %}

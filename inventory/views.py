@@ -14,8 +14,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# import pandas as pd
-
+import pandas as pd
+import io
 
 @login_required
 def inventar_liste(request):
@@ -205,6 +205,7 @@ def verkaufliste(request):
     verkauf_list = Verkauf.objects.all()
     return render(request, 'verkauf_liste.html', {'verkauf_list': verkauf_list})
 
+@login_required
 def send_email(request):
     verkauf_id = request.session.get('verkauf_id')
     if request.POST:
@@ -264,8 +265,81 @@ def send_email(request):
     }
     return render(request, 'email_preview.html',context)
 
-
+@login_required
 def statistic(request):
+    context = {}
+
+    if request.POST:
+        date_from = datetime.strptime(request.POST.get("dateFrom"), "%Y-%m-%d")
+        date_to = datetime.strptime(request.POST.get("dateTo"), "%Y-%m-%d")
+        payment_type = request.POST.get("paymentType")
+
+        if payment_type == "Bar":
+            verkauf_queryset = Verkauf.objects.filter(
+                verkaufsdatum__range=(date_from, date_to),
+                zahlungsart="Bar"
+            )
+        elif payment_type == "Beide":
+            verkauf_queryset = Verkauf.objects.filter(
+                verkaufsdatum__range=(date_from, date_to),
+            )
+        else:
+            verkauf_queryset = Verkauf.objects.filter(
+                verkaufsdatum__range=(date_from, date_to),
+                zahlungsart__in=["Karte", "Überweisung"]
+            )
+
+        data = []
+        summe_rechnungen = 0
+        for verkauf in verkauf_queryset:
+            summe_rechnungen += verkauf.final_preis
+
+            formatted_date = verkauf.verkaufsdatum.strftime('%d.%m.%Y')
+            formatted_betrag = "{:,.2f}".format(verkauf.final_preis).replace('.', ',')
+
+            data.append({
+                'Beleg-Nr.': verkauf.rechnungs_nr,
+                'Datum': formatted_date,
+                'Text': "",
+                "Vorsteur": "",
+                'Betrag': formatted_betrag
+            })
+
+        df = pd.DataFrame(data)
+
+        context["summe"] = "{:,.2f}".format(summe_rechnungen)
+        context["stk"] = len(verkauf_queryset)
+
+        # Check if "Show Me Detail" button was clicked
+        if 'show_detail' in request.POST:
+            # Generate the table from the df dataframe
+            table_headers = df.columns.tolist()
+            table_data = df.values.tolist()
+            context['table'] = {
+                'headers': table_headers,
+                'data': table_data
+            }
+
+        # Check if "Export to Excel" button was clicked
+        if 'export_excel' in request.POST:
+            # Convert DataFrame to Excel
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='Sheet1')
+            output.seek(0)
+
+            # Serve the Excel file as a response
+            response = HttpResponse(output.read(),
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="bericht.xlsx"'
+            return response
+
+    return render(request, 'statistic.html', context)
+
+
+@login_required
+# not implemented yet
+def inventar_rechner(request):
     waschmaschienen = Waschmaschine.objects.all()
     kuehlschraenke = Kuehlschrank.objects.all()
     trockner = Trockner.objects.all()
@@ -276,8 +350,9 @@ def statistic(request):
     spuelmaschine = Spuelmaschine.objects.all()
     sonst = Sonst.objects.all()
     abzughaube = Abzughaube.objects.all()
-    Kategorien = [waschmaschienen, kuehlschraenke, trockner, herdsets, herdplatte, backofen, standherd, spuelmaschine, sonst,
-            abzughaube]
+    Kategorien = [waschmaschienen, kuehlschraenke, trockner, herdsets, herdplatte, backofen, standherd, spuelmaschine,
+                  sonst,
+                  abzughaube]
 
     statistic_dict = {}
     missing_data = []
@@ -290,29 +365,29 @@ def statistic(request):
             if obj.Kauf_preis:
                 kauf_preis = obj.Kauf_preis
                 anzahl = obj.anzahl
-                statistic_dict[category_name][model_name] = {'kauf_preis':kauf_preis,
+                statistic_dict[category_name][model_name] = {'kauf_preis': kauf_preis,
                                                              'anzahl': anzahl,
-                                                             'total_preis': float(kauf_preis)*float(anzahl)}
+                                                             'total_preis': float(kauf_preis) * float(anzahl)}
             else:
-                missing_data.append((Kategorie.model._meta.model_name,model_name,obj))
+                missing_data.append((Kategorie.model._meta.model_name, model_name, obj))
 
     total_all_total_preis = 0
     total_all_total_amount = 0
     for category, models in statistic_dict.items():
         total_preis = sum(model_data['total_preis'] for model_data in models.values())
         total_amount = sum(model_data['anzahl'] for model_data in models.values())
-        models['total_preis'] = round(total_preis,2)
+        models['total_preis'] = round(total_preis, 2)
         models['total_amount'] = total_amount
         total_all_total_preis += total_preis
         total_all_total_amount += total_amount
 
-
     context = {'statistic_dict': statistic_dict,
-               'total_all_total_preis': round(total_all_total_preis,2),
+               'total_all_total_preis': round(total_all_total_preis, 2),
                'total_all_total_amount': total_all_total_amount,
                'missing_data': missing_data,
                }
-    return render(request, 'statistic.html', context)
+    return render(request, 'inventar_rechner.html', context)
+
 
 def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
     second_obj = False
