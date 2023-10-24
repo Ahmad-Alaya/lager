@@ -2,29 +2,26 @@
 
 {% block content %}
   <h2>Rechnung für {{ gerät.marke }} erstellen</h2>
-  <form method="post">
+<form method="post">
     {% csrf_token %}
     <div class="form-group">
-      <label for="anzahl">Anzahl:</label>
-      <input type="number" id="anzahl" name="anzahl" value="1" min="1" max="{{ gerät.anzahl }}" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="zahlungsart">Zahlungsart:</label>
-      <select id="zahlungsart" name="zahlungsart" class="form-control" required>
-        <option value="">None</option>
-        <option value="Bar">Bar</option>
-        <option value="Karte">Karte</option>
-        <option value="Überweisung">Überweisung</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="verkaufsdatum">Verkaufsdatum:</label>
-      <input type="datetime-local" id="verkaufsdatum" name="verkaufsdatum" value="{{ gerät.verkaufsdatum }}" class="form-control">
-    </div>
-
-    <script>
+<label for="anzahl">Anzahl:</label>
+<input class="form-control" id="anzahl" max="{{ gerät.anzahl }}" min="1" name="anzahl" type="number" value="1"/>
+</div>
+<div class="form-group">
+<label for="zahlungsart">Zahlungsart:</label>
+<select class="form-control" id="zahlungsart" name="zahlungsart" required="">
+<option value="">None</option>
+<option value="Bar">Bar</option>
+<option value="Karte">Karte</option>
+<option value="Überweisung">Überweisung</option>
+</select>
+</div>
+<div class="form-group">
+<label for="verkaufsdatum">Verkaufsdatum:</label>
+<input class="form-control" id="verkaufsdatum" name="verkaufsdatum" type="datetime-local" value="{{ gerät.verkaufsdatum }}"/>
+</div>
+<script>
     // Get the current date and time
     var now = new Date();
     // Format the date as "YYYY-MM-DDTHH:mm" (the required format for datetime-local input)
@@ -36,86 +33,86 @@
 
     {% if gerät.model %}
       <div class="form-group">
-        <label for="model">Model:</label>
-        <input type="text" id="model" name="model" value="{{ gerät.model }}" class="form-control">
-      </div>
+<label for="model">Model:</label>
+<input class="form-control" id="model" name="model" type="text" value="{{ gerät.model }}"/>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="model">Model:</label>
-        <input type="text" id="model" name="model" class="form-control">
-      </div>
+<label for="model">Model:</label>
+<input class="form-control" id="model" name="model" type="text"/>
+</div>
     {% endif %}
 
     {% if gerät.marke %}
       <div class="form-group">
-        <label for="marke">Marke:</label>
-        <input type="text" id="marke" name="marke" value="{{ gerät.marke }}" class="form-control">
-      </div>
+<label for="marke">Marke:</label>
+<input class="form-control" id="marke" name="marke" type="text" value="{{ gerät.marke }}"/>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="marke">Marke:</label>
-        <input type="text" id="marke" name="marke" class="form-control">
-      </div>
+<label for="marke">Marke:</label>
+<input class="form-control" id="marke" name="marke" type="text"/>
+</div>
     {% endif %}
 
     {% if gerät.serial_number %}
       <div class="form-group">
-        <label for="seriennummer">Seriennummer:</label>
-        <input type="text" id="seriennummer" name="seriennummer" value="{{ gerät.serial_number }}" class="form-control">
-      </div>
+<label for="seriennummer">Seriennummer:</label>
+<input class="form-control" id="seriennummer" name="seriennummer" type="text" value="{{ gerät.serial_number }}"/>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="seriennummer">Seriennummer:</label>
-        <input type="text" id="seriennummer" name="seriennummer" class="form-control">
-      </div>
+<label for="seriennummer">Seriennummer:</label>
+<input class="form-control" id="seriennummer" name="seriennummer" type="text"/>
+</div>
     {% endif %}
 
     {% if gerät.artikel_nr %}
       <div class="form-group">
-        <label for="artikelnummer">Artikelnummer:</label>
-        <input type="text" id="artikelnummer" name="artikelnummer" value="{{ gerät.artikel_nr }}" class="form-control">
-      </div>
+<label for="artikelnummer">Artikelnummer:</label>
+<input class="form-control" id="artikelnummer" name="artikelnummer" type="text" value="{{ gerät.artikel_nr }}"/>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="artikelnummer">Artikelnummer:</label>
-        <input type="text" id="artikelnummer" name="artikelnummer" class="form-control">
-      </div>
+<label for="artikelnummer">Artikelnummer:</label>
+<input class="form-control" id="artikelnummer" name="artikelnummer" type="text"/>
+</div>
     {% endif %}
 
     {% if gerät.preis %}
       <div class="form-group">
-        <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis" class="form-control" value="{{ gerät.preis }}" required>
-      </div>
+<label for="preis">Preis:</label>
+<input class="form-control" id="preis" name="preis" required="" step="0.01" type="number" value="{{ gerät.preis }}"/>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="preis">Preis:</label>
-        <input type="number" step="0.01" id="preis" name="preis" class="form-control" required>
-      </div>
+<label for="preis">Preis:</label>
+<input class="form-control" id="preis" name="preis" required="" step="0.01" type="number"/>
+</div>
     {% endif %}
 
     {% if gerät.Beschreibung %}
       <div class="form-group">
-        <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung" class="form-control"  required>{{ gerät.Beschreibung }}</textarea>
-      </div>
+<label for="beschreibung">Beschreibung:</label>
+<textarea class="form-control" id="beschreibung" name="beschreibung" required="">{{ gerät.Beschreibung }}</textarea>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="beschreibung">Beschreibung:</label>
-        <textarea id="beschreibung" name="beschreibung" class="form-control" required></textarea>
-      </div>
+<label for="beschreibung">Beschreibung:</label>
+<textarea class="form-control" id="beschreibung" name="beschreibung" required=""></textarea>
+</div>
     {% endif %}
 
     {% if gerät.zustand == "Neu" %}
       <div class="form-group">
-        <label for="zusätzlich">Zusätzlich:</label>
-        <textarea id="zusätzlich" name="zusätzlich" class="form-control"  required>Mit 2 Jahre Herstellergarantie</textarea>
-      </div>
+<label for="zusätzlich">Zusätzlich:</label>
+<textarea class="form-control" id="zusätzlich" name="zusätzlich" required="">Mit 2 Jahre Herstellergarantie</textarea>
+</div>
     {% else %}
       <div class="form-group">
-        <label for="zusätzlich">Zusätzlich:</label>
-        <textarea id="zusätzlich" name="zusätzlich" class="form-control"  required>Mit 6 Monate Herstellergarantie</textarea>
-      </div>
+<label for="zusätzlich">Zusätzlich:</label>
+<textarea class="form-control" id="zusätzlich" name="zusätzlich" required="">Mit 6 Monate Herstellergarantie</textarea>
+</div>
     {% endif %}
       <script>
         // Get the current URL of the page
@@ -128,72 +125,65 @@
         console.log(textareaElement)
         textareaElement.value = "{{gerät.marke}} " + geraeteType + " model Nr: "+ "{{ gerät.model }}";
         </script>
-
-    <div class="form-group">
-      <label for="rechnungs_nr">Rechnungsnummer:</label>
-      <input type="number" id="rechnungs_nr" name="rechnungs_nr" class="form-control" value="{{ rechnungsNr }}">
-    </div>
-  <div id="productFields" style="display: none;">
-      <div class="form-group">
-        <h3>2. Product</h3>
-        <label for="productType">Product Type:</label>
-        <select id="productType" class="form-control">
-            <option value="">Select Product Type</option>
-            <option value="waschmaschine">Waschmaschine</option>
-            <option value="kuehlschrank">Kühlschrank</option>
-            <option value="spuelmaschine">Spülmaschine</option>
-            <option value="herdset">Herdset</option>
-            <option value="herdplatte">Herdplatte</option>
-            <option value="standherd">Standherd</option>
-            <option value="backofen">Backofen</option>
-            <option value="trockner">Trockner</option>
-            <option value="abzughaube">Abzughaube</option>
-            <option value="sonst">Sonst</option>
-        </select>
-      </div>
-      <div class="form-group" id="productDropdown" style="display: none;">
-        <label for="product">Product:</label>
-        <select id="product" class="form-control">
-          <!-- Options will be populated dynamically using JavaScript -->
-        </select>
-      </div>
-
-    <!-- Additional fields for the selected product -->
-    <div class="form-group" id="model2Field" style="display: none;">
-      <label for="model2">Model 2:</label>
-      <input type="text" id="model2" name="model2" class="form-control">
-    </div>
-    <div class="form-group" id="marke2Field" style="display: none;">
-      <label for="marke2">Marke 2:</label>
-      <input type="text" id="marke2" name="marke2" class="form-control">
-    </div>
-    <div class="form-group" id="seriennummer2Field" style="display: none;">
-      <label for="seriennummer2">Seriennummer 2:</label>
-      <input type="text" id="seriennummer2" name="seriennummer2" class="form-control">
-    </div>
-    <div class="form-group" id="artikelnummer2Field" style="display: none;">
-      <label for="artikelnummer2">Artikelnummer 2:</label>
-      <input type="text" id="artikelnummer2" name="artikelnummer2" class="form-control">
-    </div>
-    <div class="form-group" id="preis2Field" style="display: none;">
-      <label for="preis2">Preis 2:</label>
-      <input type="number" step="0.01" id="preis2" name="preis2" class="form-control">
-    </div>
-    <div class="form-group" id="beschreibung2Field" style="display: none;">
-        <label for="beschreibung2">Beschreibung 2:</label>
-        <textarea id="beschreibung2" name="beschreibung2" class="form-control"></textarea>
-    </div>
-
-    <div class="form-group" id="Id2Field"  style="visibility: hidden;">
-      <label for="Id2">Id2:</label>
-      <input type="text" id="Id2" name="Id2" class="form-control">
-  </div>
-
-  </div>
-
-
-
-  <script>
+<div class="form-group">
+<label for="rechnungs_nr">Rechnungsnummer:</label>
+<input class="form-control" id="rechnungs_nr" name="rechnungs_nr" type="number" value="{{ rechnungsNr }}"/>
+</div>
+<div id="productFields" style="display: none;">
+<div class="form-group">
+<h3>2. Product</h3>
+<label for="productType">Product Type:</label>
+<select class="form-control" id="productType">
+<option value="">Select Product Type</option>
+<option value="waschmaschine">Waschmaschine</option>
+<option value="kuehlschrank">Kühlschrank</option>
+<option value="spuelmaschine">Spülmaschine</option>
+<option value="herdset">Herdset</option>
+<option value="herdplatte">Herdplatte</option>
+<option value="standherd">Standherd</option>
+<option value="backofen">Backofen</option>
+<option value="trockner">Trockner</option>
+<option value="abzughaube">Abzughaube</option>
+<option value="sonst">Sonst</option>
+</select>
+</div>
+<div class="form-group" id="productDropdown" style="display: none;">
+<label for="product">Product:</label>
+<select class="form-control" id="product">
+<!-- Options will be populated dynamically using JavaScript -->
+</select>
+</div>
+<!-- Additional fields for the selected product -->
+<div class="form-group" id="model2Field" style="display: none;">
+<label for="model2">Model 2:</label>
+<input class="form-control" id="model2" name="model2" type="text"/>
+</div>
+<div class="form-group" id="marke2Field" style="display: none;">
+<label for="marke2">Marke 2:</label>
+<input class="form-control" id="marke2" name="marke2" type="text"/>
+</div>
+<div class="form-group" id="seriennummer2Field" style="display: none;">
+<label for="seriennummer2">Seriennummer 2:</label>
+<input class="form-control" id="seriennummer2" name="seriennummer2" type="text"/>
+</div>
+<div class="form-group" id="artikelnummer2Field" style="display: none;">
+<label for="artikelnummer2">Artikelnummer 2:</label>
+<input class="form-control" id="artikelnummer2" name="artikelnummer2" type="text"/>
+</div>
+<div class="form-group" id="preis2Field" style="display: none;">
+<label for="preis2">Preis 2:</label>
+<input class="form-control" id="preis2" name="preis2" step="0.01" type="number"/>
+</div>
+<div class="form-group" id="beschreibung2Field" style="display: none;">
+<label for="beschreibung2">Beschreibung 2:</label>
+<textarea class="form-control" id="beschreibung2" name="beschreibung2"></textarea>
+</div>
+<div class="form-group" id="Id2Field" style="visibility: hidden;">
+<label for="Id2">Id2:</label>
+<input class="form-control" id="Id2" name="Id2" type="text"/>
+</div>
+</div>
+<script>
     // Function to populate the product dropdown based on the selected product type
     function populateProductDropdown() {
       var productType = document.getElementById("productType").value;
@@ -332,12 +322,9 @@
 
 
   </script>
-
-
-    <button id="addProductBtn" type="button" class="btn btn-primary">Add New Product</button>
-    <button id="deleteProductBtn" type="button" class="btn btn-danger" style="display: none;">Delete</button>
-
-  <script>
+<button class="btn btn-primary" id="addProductBtn" type="button">Add New Product</button>
+<button class="btn btn-danger" id="deleteProductBtn" style="display: none;" type="button">Delete</button>
+<script>
       // Add event listener to the "Add New Product" button
       document.getElementById("addProductBtn").addEventListener("click", function() {
         document.getElementById("productFields").style.display = "block";
@@ -351,48 +338,38 @@
         document.getElementById("deleteProductBtn").style.display = "none";
       });
   </script>
-
-    <h3>Kundeninformation</h3>
-    <br>
-
-    <div class="form-group">
-      <label for="kunde_name">Name:</label>
-      <input type="text" id="kunde_name" name="kunde_name" class="form-control" value="Bonn Kunde" required>
-    </div>
-
-    <div class="form-group">
-      <label for="kunde_strasse">Straße & Hausnummer:</label>
-      <input type="text" id="kunde_strasse" name="kunde_strasse" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="kunde_plz">PLZ:</label>
-      <input type="text" id="kunde_plz" name="kunde_plz" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="kunde_city">Stadt:</label>
-      <input type="text" id="kunde_city" name="kunde_city" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="kunde_email">E-Mail:</label>
-      <input type="email" id="kunde_email" name="kunde_email" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="kunde_mobile">Mobilnummer:</label>
-      <input type="text" id="kunde_mobile" name="kunde_mobile" class="form-control">
-    </div>
-
-    <input type="submit" value="Verkaufen" class="btn btn-primary">
-
-    <div class="form-group" id="type2Field" style="display: none;">
-      <label for="type2">Type2:</label>
-      <input type="text" id="type2" name="type2" class="form-control">
-    </div>
-
-    <script>
+<h3>Kundeninformation</h3>
+<br/>
+<div class="form-group">
+<label for="kunde_name">Name:</label>
+<input class="form-control" id="kunde_name" name="kunde_name" required="" type="text" value="Bonn Kunde"/>
+</div>
+<div class="form-group">
+<label for="kunde_strasse">Straße &amp; Hausnummer:</label>
+<input class="form-control" id="kunde_strasse" name="kunde_strasse" type="text"/>
+</div>
+<div class="form-group">
+<label for="kunde_plz">PLZ:</label>
+<input class="form-control" id="kunde_plz" name="kunde_plz" type="text"/>
+</div>
+<div class="form-group">
+<label for="kunde_city">Stadt:</label>
+<input class="form-control" id="kunde_city" name="kunde_city" type="text"/>
+</div>
+<div class="form-group">
+<label for="kunde_email">E-Mail:</label>
+<input class="form-control" id="kunde_email" name="kunde_email" type="email"/>
+</div>
+<div class="form-group">
+<label for="kunde_mobile">Mobilnummer:</label>
+<input class="form-control" id="kunde_mobile" name="kunde_mobile" type="text"/>
+</div>
+<input class="btn btn-primary" type="submit" value="Verkaufen"/>
+<div class="form-group" id="type2Field" style="display: none;">
+<label for="type2">Type2:</label>
+<input class="form-control" id="type2" name="type2" type="text"/>
+</div>
+<script>
 
     // Function to show the type2 field and set its value based on the selected productType
     function showType2Field() {
@@ -409,8 +386,6 @@
     });
 
     </script>
-
-
-  </form>
+</form>
 
 {% endblock %}

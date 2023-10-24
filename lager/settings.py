@@ -121,7 +121,7 @@ USE_TZ = True
 
 # settings.py
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 
 

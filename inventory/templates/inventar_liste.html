@@ -1,189 +1,172 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <link href="/static/styles.css" rel="stylesheet"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <h1>Inventarliste</h1>
 <div class="form-control">
 <label for="auswahlGeraet">Choose a machine:</label>
-<select name="maschine" id="auswahlGeraet">
-    <option value="------------">------------</option>
-    <option value="waschmaschine">Waschmaschine</option>
-    <option value="spuelmaschine">Spülmaschine</option>
-    <option value="kuehlschrank">Kühlschrank</option>
-    <option value="herdset">Herdset</option>
-    <option value="herdplatte">Herdplatte</option>
-    <option value="standherd">Standherd</option>
-    <option value="backofen">Backofen</option>
-    <option value="trockner">Trockner</option>
-    <option value="abzughaube">Abzughaube</option>
-    <option value="sonst">Sonst</option>
-    <option value="geraete">Geräte</option>
+<select id="auswahlGeraet" name="maschine">
+<option value="------------">------------</option>
+<option value="waschmaschine">Waschmaschine</option>
+<option value="spuelmaschine">Spülmaschine</option>
+<option value="kuehlschrank">Kühlschrank</option>
+<option value="herdset">Herdset</option>
+<option value="herdplatte">Herdplatte</option>
+<option value="standherd">Standherd</option>
+<option value="backofen">Backofen</option>
+<option value="trockner">Trockner</option>
+<option value="abzughaube">Abzughaube</option>
+<option value="sonst">Sonst</option>
+<option value="geraete">Geräte</option>
 </select>
 </div>
-
 <style>
 ul{color: #248e98;}
 </style>
 <div id="geraete-container" style="display: none">
-    <ul>
+<ul>
     {% for gerät in geräte %}
         <li>
-            <h2>{{ gerät.marke }}</h2>
-            <p>Preis: {{ gerät.preis }}</p>
-            <p>Anzahl: {{ gerät.anzahl }}</p>
-            <p><a href="{% url 'verkauf' gerät.id 'geraete'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ gerät.marke }}</h2>
+<p>Preis: {{ gerät.preis }}</p>
+<p>Anzahl: {{ gerät.anzahl }}</p>
+<p><a href="{% url 'verkauf' gerät.id 'geraete'%}">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
 <div id="waschmaschine-container" style="display: none">
-    <ul>
+<ul>
     {% for waschmaschin in waschmaschine|dictsort:'marke' %}
         <li>
-            <h2>{{ waschmaschin.marke }}</h2>
-            <p>Model: {{ waschmaschin.model }}</p>
-            <p>Preis: {{ waschmaschin.preis }}</p>
-            <p>Anzahl: {{ waschmaschin.anzahl }}</p>
-            <p><a href="{% url 'verkauf' waschmaschin.id 'waschmaschine'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ waschmaschin.marke }}</h2>
+<p>Model: {{ waschmaschin.model }}</p>
+<p>Preis: {{ waschmaschin.preis }}</p>
+<p>Anzahl: {{ waschmaschin.anzahl }}</p>
+<p><a href="{% url 'verkauf' waschmaschin.id 'waschmaschine'%} " class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
 <div id="spuelmaschine-container" style="display: none">
-    <ul>
+<ul>
     {% for spuelmaschin in spuelmaschine|dictsort:'marke' %}
         <li>
-            <h2>{{ spuelmaschin.marke }}</h2>
-            <p>Model: {{ spuelmaschin.model }}</p>
-            <p>Preis: {{ spuelmaschin.preis }}</p>
-            <p>Anzahl: {{ spuelmaschin.anzahl }}</p>
-            <p><a href="{% url 'verkauf' spuelmaschin.id 'spuelmaschine'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ spuelmaschin.marke }}</h2>
+<p>Model: {{ spuelmaschin.model }}</p>
+<p>Preis: {{ spuelmaschin.preis }}</p>
+<p>Anzahl: {{ spuelmaschin.anzahl }}</p>
+<p><a href="{% url 'verkauf' spuelmaschin.id 'spuelmaschine'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
 <div id="kuehlschrank-container" style="display: none">
-    <ul>
+<ul>
     {% for kuehlschran in kuehlschrank|dictsort:'marke' %}
         <li>
-            <h2>{{ kuehlschran.marke }}</h2>
-            <p>Model: {{ kuehlschran.model }}</p>
-            <p>Preis: {{ kuehlschran.preis }}</p>
-            <p>Anzahl: {{ kuehlschran.anzahl }}</p>
-            <p><a href="{% url 'verkauf' kuehlschran.id 'kuehlschrank'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ kuehlschran.marke }}</h2>
+<p>Model: {{ kuehlschran.model }}</p>
+<p>Preis: {{ kuehlschran.preis }}</p>
+<p>Anzahl: {{ kuehlschran.anzahl }}</p>
+<p><a href="{% url 'verkauf' kuehlschran.id 'kuehlschrank'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
-
 <div id="herdset-container" style="display: none">
-    <ul>
+<ul>
     {% for herdse in herdset|dictsort:'marke' %}
         <li>
-            <h2>{{ herdse.marke }}</h2>
-            <p>Model: {{ herdse.model }}</p>
-            <p>Preis: {{ herdse.preis }}</p>
-            <p>Anzahl: {{ herdse.anzahl }}</p>
-            <p><a href="{% url 'verkauf' herdse.id 'herdset'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ herdse.marke }}</h2>
+<p>Model: {{ herdse.model }}</p>
+<p>Preis: {{ herdse.preis }}</p>
+<p>Anzahl: {{ herdse.anzahl }}</p>
+<p><a href="{% url 'verkauf' herdse.id 'herdset'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
 <div id="herdplatte-container" style="display: none">
-    <ul>
+<ul>
     {% for herdplatt in herdplatte|dictsort:'marke' %}
         <li>
-            <h2>{{ herdplatt.marke }}</h2>
-            <p>Model: {{ herdplatt.model }}</p>
-            <p>Preis: {{ herdplatt.preis }}</p>
-            <p>Anzahl: {{ herdplatt.anzahl }}</p>
-            <p><a href="{% url 'verkauf' herdplatt.id 'herdplatte'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ herdplatt.marke }}</h2>
+<p>Model: {{ herdplatt.model }}</p>
+<p>Preis: {{ herdplatt.preis }}</p>
+<p>Anzahl: {{ herdplatt.anzahl }}</p>
+<p><a href="{% url 'verkauf' herdplatt.id 'herdplatte'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
-
 <div id="standherd-container" style="display: none">
-    <ul>
+<ul>
     {% for standher in standherd|dictsort:'marke' %}
         <li>
-            <h2>{{ standher.marke }}</h2>
-            <p>Model: {{ standher.model }}</p>
-            <p>Preis: {{ standher.preis }}</p>
-            <p>Anzahl: {{ standher.anzahl }}</p>
-            <p><a href="{% url 'verkauf' standher.id 'standherd'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ standher.marke }}</h2>
+<p>Model: {{ standher.model }}</p>
+<p>Preis: {{ standher.preis }}</p>
+<p>Anzahl: {{ standher.anzahl }}</p>
+<p><a href="{% url 'verkauf' standher.id 'standherd'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
 <div id="backofen-container" style="display: none">
-    <ul>
+<ul>
     {% for backofe in backofen|dictsort:'marke' %}
         <li>
-            <h2>{{ backofe.marke }}</h2>
-            <p>Model: {{ backofe.model }}</p>
-            <p>Preis: {{ backofe.preis }}</p>
-            <p>Anzahl: {{ backofe.anzahl }}</p>
-            <p><a href="{% url 'verkauf' backofe.id 'backofen'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ backofe.marke }}</h2>
+<p>Model: {{ backofe.model }}</p>
+<p>Preis: {{ backofe.preis }}</p>
+<p>Anzahl: {{ backofe.anzahl }}</p>
+<p><a href="{% url 'verkauf' backofe.id 'backofen'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
 <div id="trockner-container" style="display: none">
-    <ul>
+<ul>
     {% for trockne in trockner|dictsort:'marke' %}
         <li>
-            <h2>{{ trockne.marke }}</h2>
-            <p>Model: {{ trockne.model }}</p>
-            <p>Preis: {{ trockne.preis }}</p>
-            <p>Anzahl: {{ trockne.anzahl }}</p>
-            <p><a href="{% url 'verkauf' trockne.id 'trockner'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ trockne.marke }}</h2>
+<p>Model: {{ trockne.model }}</p>
+<p>Preis: {{ trockne.preis }}</p>
+<p>Anzahl: {{ trockne.anzahl }}</p>
+<p><a href="{% url 'verkauf' trockne.id 'trockner'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
-
 <div id="abzughaube-container" style="display: none">
-    <ul>
+<ul>
     {% for abzughaub in abzughaube|dictsort:'marke' %}
         <li>
-            <h2>{{ abzughaub.marke }}</h2>
-            <p>Model: {{ abzughaub.model }}</p>
-            <p>Preis: {{ abzughaub.preis }}</p>
-            <p>Anzahl: {{ abzughaub.anzahl }}</p>
-            <p><a href="{% url 'verkauf' abzughaub.id 'abzughaube'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ abzughaub.marke }}</h2>
+<p>Model: {{ abzughaub.model }}</p>
+<p>Preis: {{ abzughaub.preis }}</p>
+<p>Anzahl: {{ abzughaub.anzahl }}</p>
+<p><a href="{% url 'verkauf' abzughaub.id 'abzughaube'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
-
 <div id="sonst-container" style="display: none">
-    <ul>
+<ul>
     {% for sons in sonst|dictsort:'marke' %}
         <li>
-            <h2>{{ sons.marke }}</h2>
-            <p>Model: {{ sons.model }}</p>
-            <p>Preis: {{ sons.preis }}</p>
-            <p>Anzahl: {{ sons.anzahl }}</p>
-            <p><a href="{% url 'verkauf' sons.id 'sonst'%}">Verkaufen</a></p>
-        </li>
+<h2>{{ sons.marke }}</h2>
+<p>Model: {{ sons.model }}</p>
+<p>Preis: {{ sons.preis }}</p>
+<p>Anzahl: {{ sons.anzahl }}</p>
+<p><a href="{% url 'verkauf' sons.id 'sonst'%}" class="btn">Verkaufen</a></p>
+</li>
     {% endfor %}
     </ul>
 </div>
-
-
-
-<div id="sessionTimeoutData" data-session-timeout="{{ SESSION_COOKIE_AGE }}"></div>
-
+<div data-session-timeout="{{ SESSION_COOKIE_AGE }}" id="sessionTimeoutData"></div>
 <script>
   $("#auswahlGeraet").on('change', () => {
     var x = $("#auswahlGeraet option:selected").text();

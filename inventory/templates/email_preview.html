@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Email Preview and Edit</title>
-</head>
-<body>
-    <h1>Email Preview and Edit</h1>
+<head><extends value="base.html"></extends>
+<title>Email Preview and Edit</title>
+<link href="/static/styles.css" rel="stylesheet"/></head>
 
-    <h2>Edit Email</h2>
-    <form method="post" action="{% url 'send_email' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="subject">Subject:</label><br>
-        <input type="text" id="subject" name="subject" value="{{ subject }}"><br><br>
-        <label for="email">E-Mail:</label><br>
-        <input type="text" id="email" name="email" value="{{ email }}"><br><br>
-        <!--<label for="pdf_file">Attach PDF:</label><br>
+<div class="container"><div class="container"><body>
+<h1 style="color: #007BFF;">Email Preview and Edit</h1>
+<h2 style="color: #007BFF;">Edit Email</h2>
+<form action="{% url 'send_email' %}" enctype="multipart/form-data" method="post">
+ {% csrf_token %}
+<div class="form-control">
+<label for="subject">Subject:</label><br/>
+<input class="form-control" id="subject" name="subject" type="text" value="{{ subject }}"/><br/><br/>
+</div>
+<label for="email">E-Mail:</label><br/>
+<input class="form-control" id="email" name="email" type="text" value="{{ email }}"/><br/><br/>
+<!--<label for="pdf_file">Attach PDF:</label><br>
         <input type="file" id="pdf_file" name="pdf_file" value="{{ rechnung_pdf }}"><br><br> -->
-        <input type="checkbox" id="kopie_mail" name="kopie_mail" checked>
-        <label for="kopie_mail">Kopie an mich senden</label><br><br>
-        <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="25" cols="100">{{ message }}</textarea><br><br>
-        <input type="submit" value="final_send" name="final_send">
-    </form>
-</body>
+<input checked="" class="form-control" id="kopie_mail" name="kopie_mail" type="checkbox"/>
+<label for="kopie_mail">Kopie an mich senden</label><br/><br/>
+<label for="message">Message:</label><br/>
+<textarea class="form-control" cols="100" id="message" name="message" rows="25">{{ message }}</textarea><br/><br/>
+<input class="btn btn-primary" name="final_send" type="submit" value="final_send"/>
+</form>
+</body></div></div>
 </html>
