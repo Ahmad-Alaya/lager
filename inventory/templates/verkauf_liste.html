@@ -1,281 +1,293 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% load static %}
-<link href="/static/styles.css" rel="stylesheet"/>
-<h1>Verkaufsliste</h1>
+    {% load static %}
+    <link href="/static/styles.css" rel="stylesheet"/>
+    <h1>Verkaufsliste</h1>
 
-<style>
-/* Success message style */
-.message-success {
-  background-color: #d0ffd0;
-  color: white;
-}
-
-/* Error message style */
-.message-error {
-  background-color: #ff7b7b;
-  color: white;
-}
-
-.bezahlt-color-ja {
-  background-color: #d0ffd0;
-}
-
-.bezahlt-color-nein {
-  background-color: #ff7b7b;
-}
-
-.bezahlt-color--- {
-  background-color: #ffff9b;
-}
-
-</style>
-
-<table>
-<thead>
-<tr>
-<th>Gerät</th>
-<th>Preis</th>
-<th>Verkaufsdatum</th>
-<th>Zahlungsart</th>
-<th>Kunde</th>
-<th>RechnungsNr</th>
-<th>Verkäufer</th>
-<th>Bezahlt</th>
-<th>Zahlungsdatum</th>
-
-</tr>
-</thead>
-<tbody>
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li class="message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% for verkauf in verkauf_list|dictsortreversed:'verkaufsdatum' %}
-    <tr>
-<form action="{% url 'verkauf_liste' %}" method="post">
-        {% csrf_token %}
-
-{#          {% if verkauf.type_of2 %}#}
-{#          {% endif %}#}
-<td>{{ verkauf.type_of }}</td>
-<td>{{ verkauf.final_preis }}</td>
-<td>{{ verkauf.verkaufsdatum }}</td>
-<td>{{ verkauf.zahlungsart }}</td>
-<td>{{ verkauf.kunde_name }}</td>
-<td>{{ verkauf.rechnungs_nr }}</td>
-<td>{{ verkauf.verkäufer }}</td>
-<td>
-<select data-original-value="{{ verkauf.bezahlt }}" name="bezahlt" onchange="confirmBezahltChange(this)">
-    <option value="---" {% if verkauf.bezahlt == "---" %}selected{% endif %}>---</option>
-    <option value="Ja" {% if verkauf.bezahlt == "Ja" %}selected{% endif %}>Ja</option>
-    <option value="Nein" {% if verkauf.bezahlt == "Nein" %}selected{% endif %}>Nein</option>
-</select>
-<input name="submit_bezahlt" style="display: none;" type="submit"/>
-</td>
-<td>
-<input data-original-value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" name="zahlungsdatum" onchange="confirmZahlungsdatumChange(this)" type="date" value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}"/>
-<input name="submit_zahlungsdatum" style="display: none;" type="submit"/>
-</td>
-<input name="verkauf_id" type="hidden" value="{{ verkauf.id }}"/>
-<td><button name="herunterladen" type="submit" class="btn"><img src="../static/download.png" alt="Herunterladen" width="17" height="20"></button></td>
-<td><button name="anzeigen" type="submit" class="btn"><img src="../static/show.png" alt="Herunterladen" width="17" height="20"></button></td>
-<td>
-    <a href="{% url 'admin:inventory_verkauf_change' verkauf.id %}">
-        <img src="{% static 'edit.png' %}" alt="bearbeiten" width="17" height="20">
-    </a>
-</td>
-<td>
-    <button class="btn" name="send_email" type="submit" value="send_email">
-        <img src="{% static 'email.png' %}" alt="Email senden" width="17" height="20">
-    </button>
-</td>
-<td>
-<a class="delete-link" href="#"><img src="{% static 'trash.png' %}" alt="Delete" width="17" height="20"></a>
-</td>
-</form>
-</tr>
-    {% endfor %}
-  </tbody>
-</table>
-<!-- JavaScript code to show the confirmation message -->
-<script>
-  const deleteLinks = document.querySelectorAll('.delete-link');
-  deleteLinks.forEach(link => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      // Are you sure you want to delete this message? The selled object will be returned to your inventory.
-      const confirmation = confirm("Sorry but you can not delete an invoice yet");
-      if (confirmation) {
-        // If user confirms, submit the form
-        link.closest('form').submit();
-      }
-    });
-  });
-</script>
-<!-- JavaScript code to show the warning message -->
-<script>
-let originalBezahltValue = '{{ verkauf.bezahlt }}';
-  let originalZahlungsdatumValue = '{{ verkauf.zahlungsdatum | date:'Y-m-d' }}';
-
-  function confirmBezahltChange(selectElement) {
-  const newValue = selectElement.value;
-  const originalValue = selectElement.getAttribute('data-original-value');
-  const confirmation = confirm(`Are you sure you want to change "Bezahlt" to "${newValue}"?`);
-
-  if (confirmation) {
-    // Update the original value and submit the form
-    selectElement.setAttribute('data-original-value', newValue);
-    const submitButton = selectElement.parentNode.querySelector('input[name="submit_bezahlt"]');
-    submitButton.click();
-
-  } else {
-    // Reset the select element to the original value
-    selectElement.value = originalValue;
-  }
-}
-
-  function confirmZahlungsdatumChange(inputElement) {
-  const newValue = inputElement.value;
-  const originalValue = inputElement.getAttribute('data-original-value');
-  const confirmation = confirm(`Are you sure you want to change "Zahlungsdatum" to "${newValue}"?`);
-
-  if (confirmation) {
-    // Update the original value and submit the form
-    inputElement.setAttribute('data-original-value', newValue);
-    const submitButtonDatum = inputElement.parentNode.querySelector('input[name="submit_zahlungsdatum"]');
-    submitButtonDatum.click();
-  } else {
-    // Reset the input element to the original value
-    inputElement.value = originalValue;
-  }
-}
-
-</script>
-<script>
-  // Function to sort the table by the given column index
-  function sortTable(columnIndex) {
-    let table, rows, switching, i, x, y, shouldSwitch;
-    table = document.querySelector('table');
-    switching = true;
-
-    // Get the current sorting column index and direction
-    let currentSortIndex = parseInt(table.getAttribute('data-sort-index') || 0);
-    let sortOrder = table.getAttribute('data-sort-order') || 'asc';
-
-    // Determine if the user clicked on the same column
-    if (columnIndex === currentSortIndex) {
-      // Reverse the sorting order
-      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-      // Set the new sorting column and default to ascending order
-      currentSortIndex = columnIndex;
-      sortOrder = 'asc';
-    }
-
-    // Update the sorting indicators
-    const headers = document.querySelectorAll('th');
-    headers.forEach((header, index) => {
-      header.classList.remove('asc', 'desc');
-      if (index === currentSortIndex) {
-        header.classList.add(sortOrder);
-      }
-    });
-
-    table.setAttribute('data-sort-index', currentSortIndex);
-    table.setAttribute('data-sort-order', sortOrder);
-
-    while (switching) {
-      switching = false;
-      rows = table.rows;
-
-      for (i = 1; i < (rows.length - 1); i++) {
-        shouldSwitch = false;
-        x = rows[i].getElementsByTagName('td')[columnIndex];
-        y = rows[i + 1].getElementsByTagName('td')[columnIndex];
-
-        if (sortOrder === 'asc') {
-          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-            shouldSwitch = true;
-            break;
-          }
-        } else if (sortOrder === 'desc') {
-          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-            shouldSwitch = true;
-            break;
-          }
+    <style>
+        /* Success message style */
+        .message-success {
+            background-color: #209820;
+            color: white;
         }
-      }
 
-      if (shouldSwitch) {
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-      }
-    }
-  }
+        /* Error message style */
+        .message-error {
+            background-color: #ff7b7b;
+            color: white;
+        }
 
-  // Attach event listeners to the table headers for sorting
-  document.querySelectorAll('th').forEach((header, index) => {
-    header.addEventListener('click', () => sortTable(index));
-  });
+        .bezahlt-color-ja {
+            background-color: #d0ffd0;
+        }
+
+        .bezahlt-color-nein {
+            background-color: #ff7b7b;
+        }
+
+        .bezahlt-color--- {
+            background-color: #ffff9b;
+        }
+
+    </style>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Gerät</th>
+            <th>Preis</th>
+            <th>Verkaufsdatum</th>
+            <th>Zahlungsart</th>
+            <th>Kunde</th>
+            <th>RechnungsNr</th>
+            <th>Verkäufer</th>
+            <th>Bezahlt</th>
+            <th>Zahlungsdatum</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% for verkauf in verkauf_list|dictsortreversed:'verkaufsdatum' %}
+            <tr>
+                <form action="{% url 'verkauf_liste' %}" method="post">
+                    {% csrf_token %}
+
+                    {#          {% if verkauf.type_of2 %}#}
+                    {#          {% endif %}#}
+                    <td>{{ verkauf.type_of }}</td>
+                    <td>{{ verkauf.final_preis }}</td>
+                    <td>{{ verkauf.verkaufsdatum }}</td>
+                    <td>{{ verkauf.zahlungsart }}</td>
+                    <td>{{ verkauf.kunde_name }}</td>
+                    <td>{{ verkauf.rechnungs_nr }}</td>
+                    <td>{{ verkauf.verkäufer }}</td>
+                    <td>
+                        <select data-original-value="{{ verkauf.bezahlt }}" name="bezahlt"
+                                onchange="confirmBezahltChange(this)">
+                            <option value="---" {% if verkauf.bezahlt == "---" %}selected{% endif %}>---</option>
+                            <option value="Ja" {% if verkauf.bezahlt == "Ja" %}selected{% endif %}>Ja</option>
+                            <option value="Nein" {% if verkauf.bezahlt == "Nein" %}selected{% endif %}>Nein</option>
+                        </select>
+                        <input name="submit_bezahlt" style="display: none;" type="submit"/>
+                    </td>
+                    <td>
+                        <input data-original-value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}" name="zahlungsdatum"
+                               onchange="confirmZahlungsdatumChange(this)" type="date"
+                               value="{{ verkauf.zahlungsdatum | date:'Y-m-d' }}"/>
+                        <input name="submit_zahlungsdatum" style="display: none;" type="submit"/>
+                    </td>
+                    <input name="verkauf_id" type="hidden" value="{{ verkauf.id }}"/>
+                    <td>
+                        <button name="herunterladen" type="submit" class="btn"><img src="../static/download.png"
+                                                                                    alt="Herunterladen" width="17"
+                                                                                    height="20"></button>
+                    </td>
+                    <td>
+                        <button name="anzeigen" type="submit" class="btn"><img src="../static/show.png"
+                                                                               alt="Herunterladen" width="17"
+                                                                               height="20"></button>
+                    </td>
+                    <td>
+                        <button class="btn" name="send_email" type="submit" value="send_email">
+                            <img src="{% static 'email.png' %}" alt="Email senden" width="17" height="20">
+                        </button>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:inventory_verkauf_change' verkauf.id %}">
+                            <img src="{% static 'edit.png' %}" alt="bearbeiten" width="17" height="20">
+                        </a>
+                    </td>
+                    <td>
+                        <a class="delete-link" href="#"><img src="{% static 'trash.png' %}" alt="Delete" width="17"
+                                                             height="20"></a>
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- JavaScript code to show the confirmation message -->
+    <script>
+        const deleteLinks = document.querySelectorAll('.delete-link');
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Are you sure you want to delete this message? The selled object will be returned to your inventory.
+                const confirmation = confirm("Sorry but you can not delete an invoice yet");
+                if (confirmation) {
+                    // If user confirms, submit the form
+                    link.closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <!-- JavaScript code to show the warning message -->
+    <script>
+        let originalBezahltValue = '{{ verkauf.bezahlt }}';
+        let originalZahlungsdatumValue = '{{ verkauf.zahlungsdatum | date:'Y-m-d' }}';
+
+        function confirmBezahltChange(selectElement) {
+            const newValue = selectElement.value;
+            const originalValue = selectElement.getAttribute('data-original-value');
+            const confirmation = confirm(`Are you sure you want to change "Bezahlt" to "${newValue}"?`);
+
+            if (confirmation) {
+                // Update the original value and submit the form
+                selectElement.setAttribute('data-original-value', newValue);
+                const submitButton = selectElement.parentNode.querySelector('input[name="submit_bezahlt"]');
+                submitButton.click();
+
+            } else {
+                // Reset the select element to the original value
+                selectElement.value = originalValue;
+            }
+        }
+
+        function confirmZahlungsdatumChange(inputElement) {
+            const newValue = inputElement.value;
+            const originalValue = inputElement.getAttribute('data-original-value');
+            const confirmation = confirm(`Are you sure you want to change "Zahlungsdatum" to "${newValue}"?`);
+
+            if (confirmation) {
+                // Update the original value and submit the form
+                inputElement.setAttribute('data-original-value', newValue);
+                const submitButtonDatum = inputElement.parentNode.querySelector('input[name="submit_zahlungsdatum"]');
+                submitButtonDatum.click();
+            } else {
+                // Reset the input element to the original value
+                inputElement.value = originalValue;
+            }
+        }
+
+    </script>
+    <script>
+        // Function to sort the table by the given column index
+        function sortTable(columnIndex) {
+            let table, rows, switching, i, x, y, shouldSwitch;
+            table = document.querySelector('table');
+            switching = true;
+
+            // Get the current sorting column index and direction
+            let currentSortIndex = parseInt(table.getAttribute('data-sort-index') || 0);
+            let sortOrder = table.getAttribute('data-sort-order') || 'asc';
+
+            // Determine if the user clicked on the same column
+            if (columnIndex === currentSortIndex) {
+                // Reverse the sorting order
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Set the new sorting column and default to ascending order
+                currentSortIndex = columnIndex;
+                sortOrder = 'asc';
+            }
+
+            // Update the sorting indicators
+            const headers = document.querySelectorAll('th');
+            headers.forEach((header, index) => {
+                header.classList.remove('asc', 'desc');
+                if (index === currentSortIndex) {
+                    header.classList.add(sortOrder);
+                }
+            });
+
+            table.setAttribute('data-sort-index', currentSortIndex);
+            table.setAttribute('data-sort-order', sortOrder);
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName('td')[columnIndex];
+                    y = rows[i + 1].getElementsByTagName('td')[columnIndex];
+
+                    if (sortOrder === 'asc') {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (sortOrder === 'desc') {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
+        // Attach event listeners to the table headers for sorting
+        document.querySelectorAll('th').forEach((header, index) => {
+            header.addEventListener('click', () => sortTable(index));
+        });
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  const messages = document.querySelectorAll('.message');
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
 
-  messages.forEach(message => {
-    // Check if the message has a success or error class
-    if (message.classList.contains('success')) {
-      message.classList.add('message-success');
-    } else if (message.classList.contains('error')) {
-      message.classList.add('message-error');
-    }
+            messages.forEach(message => {
+                // Check if the message has a success or error class
+                if (message.classList.contains('success')) {
+                    message.classList.add('message-success');
+                } else if (message.classList.contains('error')) {
+                    message.classList.add('message-error');
+                }
 
-    // Automatically remove messages after 5 seconds
-    setTimeout(() => {
-      message.style.opacity = '0';
-      setTimeout(() => {
-        message.remove();
-      }, 1000); // Remove after fade-out animation duration
-    }, 5000); // 5 seconds
-  });
-});
+                // Automatically remove messages after 5 seconds
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 1000); // Remove after fade-out animation duration
+                }, 5000); // 5 seconds
+            });
+        });
 
-// Add this at the beginning of your last <script> section
+        // Add this at the beginning of your last <script> section
 
-function updateBezahltColor(selectElement) {
-  const value = selectElement.value;
+        function updateBezahltColor(selectElement) {
+            const value = selectElement.value;
 
-  // Reset all color classes
-  selectElement.classList.remove('bezahlt-color-ja', 'bezahlt-color-nein', 'bezahlt-color---');
+            // Reset all color classes
+            selectElement.classList.remove('bezahlt-color-ja', 'bezahlt-color-nein', 'bezahlt-color---');
 
-  // Set the appropriate color class
-  if (value === 'Ja') {
-    selectElement.classList.add('bezahlt-color-ja');
-  } else if (value === 'Nein') {
-    selectElement.classList.add('bezahlt-color-nein');
-  } else if (value === '---') {
-    selectElement.classList.add('bezahlt-color---');
-  }
-}
+            // Set the appropriate color class
+            if (value === 'Ja') {
+                selectElement.classList.add('bezahlt-color-ja');
+            } else if (value === 'Nein') {
+                selectElement.classList.add('bezahlt-color-nein');
+            } else if (value === '---') {
+                selectElement.classList.add('bezahlt-color---');
+            }
+        }
 
-// This will automatically set the color when the page is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const bezahltSelects = document.querySelectorAll('select[name="bezahlt"]');
-  bezahltSelects.forEach(select => {
-    updateBezahltColor(select);
+        // This will automatically set the color when the page is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const bezahltSelects = document.querySelectorAll('select[name="bezahlt"]');
+            bezahltSelects.forEach(select => {
+                updateBezahltColor(select);
 
-    // Also add an event listener to change color when the select value is changed
-    select.addEventListener('change', function() {
-      updateBezahltColor(this);
-    });
-  });
-});
+                // Also add an event listener to change color when the select value is changed
+                select.addEventListener('change', function () {
+                    updateBezahltColor(this);
+                });
+            });
+        });
 
-</script>
+    </script>
 
 {% endblock %}

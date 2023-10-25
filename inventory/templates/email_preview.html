@@ -1,27 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head><extends value="base.html"></extends>
-<title>Email Preview and Edit</title>
-<link href="/static/styles.css" rel="stylesheet"/></head>
+{% extends 'base.html' %}
 
-<div class="container"><div class="container"><body>
-<h1 style="color: #007BFF;">Email Preview and Edit</h1>
-<h2 style="color: #007BFF;">Edit Email</h2>
-<form action="{% url 'send_email' %}" enctype="multipart/form-data" method="post">
- {% csrf_token %}
-<div class="form-control">
-<label for="subject">Subject:</label><br/>
-<input class="form-control" id="subject" name="subject" type="text" value="{{ subject }}"/><br/><br/>
-</div>
-<label for="email">E-Mail:</label><br/>
-<input class="form-control" id="email" name="email" type="text" value="{{ email }}"/><br/><br/>
-<!--<label for="pdf_file">Attach PDF:</label><br>
-        <input type="file" id="pdf_file" name="pdf_file" value="{{ rechnung_pdf }}"><br><br> -->
-<input checked="" class="form-control" id="kopie_mail" name="kopie_mail" type="checkbox"/>
-<label for="kopie_mail">Kopie an mich senden</label><br/><br/>
-<label for="message">Message:</label><br/>
-<textarea class="form-control" cols="100" id="message" name="message" rows="25">{{ message }}</textarea><br/><br/>
-<input class="btn btn-primary" name="final_send" type="submit" value="final_send"/>
-</form>
-</body></div></div>
-</html>
+{% block content %}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <extends value="base.html"></extends>
+        <title>Email Preview and Edit</title>
+        <link href="/static/styles.css" rel="stylesheet"/>
+    </head>
+
+    <div class="container">
+        <div class="container">
+            <body>
+            <h1>Email Preview</h1>
+            <form action="{% url 'send_email' %}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <div>
+                    <label for="subject">Subject:</label><br/>
+                    <input  class="form-control"  id="subject" name="subject" type="text"
+                           value="{{ subject }}"/><br/><br/>
+                </div>
+                <label for="email">E-Mail:</label><br/>
+                <input  class="form-control" id="email" name="email" type="text" value="{{ email }}"/><br/><br/>
+                <!--<label for="pdf_file">Attach PDF:</label><br>
+                <input type="file" id="pdf_file" name="pdf_file" value="{{ rechnung_pdf }}"><br><br> -->
+                <input checked=""  id="kopie_mail" name="kopie_mail" type="checkbox"/>
+                <label for="kopie_mail">Kopie an mich senden</label><br/><br/>
+                <label for="message">Message:</label><br/>
+                <textarea  cols="100" id="message" name="message" rows="15">{{ message }}</textarea><br/><br/>
+                <input class="btn btn-primary" name="final_send" type="submit" value="Send"/>
+            </form>
+            </body>
+        </div>
+    </div>
+    </html>
+{% endblock %}

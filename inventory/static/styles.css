@@ -48,9 +48,18 @@ th, td {
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #ffffff;
 }
 
-input{
+tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+
+tr:hover {
+    background-color: #17a2b8;
+}
+
+
+input {
     background-color: #5dadc0;
 }
