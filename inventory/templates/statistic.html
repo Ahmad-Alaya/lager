@@ -1,74 +1,78 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<head>
-    <title>Statistic</title>
-    <style>
-        /* Some basic styles for the form */
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Statistics</h1>
+    <head>
+        <title>Statistic</title>
+        <style>
+            /* Some basic styles for the form */
+            .input-group {
+                margin-bottom: 20px;
+            }
 
-    <form action="{% url 'statistic' %}" method="post">
-        {% csrf_token %}
+            .input-group label {
+                margin-right: 10px;
+            }
+            .marg{
+                margin-bottom: 12px;
+            }
+        </style>
+        <link href="/static/styles.css" rel="stylesheet"/>
+    </head>
+    <div class="container">
+        <body>
+        <h1>Statistics</h1>
+        <form action="{% url 'statistic' %}" method="post">
+            {% csrf_token %}
+            <div class="form-control input-group">
+                <label for="dateFrom">Date From:</label>
+                <input class ="marg" id="dateFrom" name="dateFrom" required="" type="date" value="{{ request.POST.dateFrom }}"/>
+            </div>
+            <div class="form-control input-group">
+                <label for="dateTo">Date To:</label>
+                <input class ="marg"  id="dateTo" name="dateTo" required="" type="date" value="{{ request.POST.dateTo }}"/>
+            </div>
+            <div class="form-control input-group">
+                <label for="paymentType">Payment Type:</label>
+                <select class ="marg"  id="paymentType" name="paymentType" required>
+                    <option value="Bar" {% if request.POST.paymentType == "Bar" %}selected{% endif %}>Bar</option>
+                    <option value="Karte/Überweisung"
+                            {% if request.POST.paymentType == "Karte/Überweisung" %}selected{% endif %}>
+                        Karte/Überweisung
+                    </option>
+                    <option value="Beide" {% if request.POST.paymentType == "Beide" %}selected{% endif %}>Beide</option>
+                </select>
+            </div>
+            <button class="btn" type="submit">Get Statistics</button>
 
-        <div class="input-group">
-            <label for="dateFrom">Date From:</label>
-            <input type="date" id="dateFrom" name="dateFrom" required value="{{ request.POST.dateFrom }}">
-        </div>
+            {% if summe %}
+                <h1>Es wurden {{ stk }} Rechnungen erstellt für: {{ summe }} €</h1>
+                <button class="btn" name="show_detail" type="submit" value="1">Show Me Detail</button>
+                <button class="btn" name="export_excel" type="submit" value="1">Export As Excel</button>
+                <h1></h1>
 
-        <div class="input-group">
-            <label for="dateTo">Date To:</label>
-            <input type="date" id="dateTo" name="dateTo" required value="{{ request.POST.dateTo }}">
-        </div>
-
-        <div class="input-group">
-            <label for="paymentType">Payment Type:</label>
-            <select id="paymentType" name="paymentType" required>
-                <option value="Bar" {% if request.POST.paymentType == "Bar" %}selected{% endif %}>Bar</option>
-                <option value="Karte/Überweisung" {% if request.POST.paymentType == "Karte/Überweisung" %}selected{% endif %}>Karte/Überweisung</option>
-                <option value="Beide" {% if request.POST.paymentType == "Beide" %}selected{% endif %}>Beide</option>
-            </select>
-        </div>
-
-
-        <button type="submit">Get Statistics</button>
-
-        {% if summe %}
-            <h1>Es wurden {{ stk }} Rechnungen erstellt für: {{ summe }} €</h1>
-            <button type="submit" name="show_detail" value="1">Show Me Detail</button>
-            <button type="submit" name="export_excel" value="1">Export As Excel</button>
-            <h1></h1>
-
-            {% if table %}
-                <table border="1">
-                    <thead>
+                {% if table %}
+                    <table border="1">
+                        <thead>
                         <tr>
                             {% for header in table.headers %}
-                            <th>{{ header }}</th>
+                                <th>{{ header }}</th>
                             {% endfor %}
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         {% for row in table.data %}
-                        <tr>
-                            {% for cell in row %}
-                            <td>{{ cell }}</td>
-                            {% endfor %}
-                        </tr>
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
                         {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                {% endif %}
             {% endif %}
-        {% endif %}
 
-    </form>
-</body>
+        </form>
+        </body>
+    </div>
 {% endblock %}

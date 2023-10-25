@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p^-@5_0_4nb-uu4ca75tzsns+wetd0iw43j4_2r8!gk0n!x!@s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['sarahhandel.pythonanywhere.com','127.0.0.1']
 
@@ -121,7 +121,7 @@ USE_TZ = True
 
 # settings.py
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 
 

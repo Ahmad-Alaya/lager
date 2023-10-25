@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-    <title>Statistics</title>
-</head>
-<body>
-    <style>
+<title>Statistics</title>
+<link href="/static/styles.css" rel="stylesheet"/></head>
+<div class="container"><body>
+<style>
         body {
             font-family: Arial, sans-serif;
         }
@@ -32,42 +33,42 @@
             background-color: #ddd;
         }
     </style>
-    <h1>Product Statistics</h1>
-    <p>Stücke: {{ total_all_total_amount }}</p>
-    <p>Total of Preise: {{ total_all_total_preis }}</p>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Model</th>
-                <th>Kauf_preis</th>
-                <th>Anzahl</th>
-                <th>Total Preis</th>
-            </tr>
-        </thead>
-        <tbody>
-            <p>Diese Ware haben noch kein Kaufpreis: </p>
-            <p>{{ missing_data }}</p>
+<h1>Product Statistics</h1>
+<p>Stücke: {{ total_all_total_amount }}</p>
+<p>Total of Preise: {{ total_all_total_preis }}</p>
+<table border="1">
+<thead>
+<tr>
+<th>Category</th>
+<th>Model</th>
+<th>Kauf_preis</th>
+<th>Anzahl</th>
+<th>Total Preis</th>
+</tr>
+</thead>
+<tbody>
+<p>Diese Ware haben noch kein Kaufpreis: </p>
+<p>{{ missing_data }}</p>
 
             {% for category, models in statistic_dict.items %}
                 <tr>
-                    <td rowspan="{{ models|length|add:'2' }}">{{ category }}</td>
-                </tr>
+<td rowspan="{{ models|length|add:'2' }}">{{ category }}</td>
+</tr>
                 {% for model, data in models.items %}
                     <tr>
-                        <td>{{ model }}</td>
-                        <td>{{ data.kauf_preis }}</td>
-                        <td>{{ data.anzahl }}</td>
-                        <td>{{ data.total_preis }}</td>
-                    </tr>
+<td>{{ model }}</td>
+<td>{{ data.kauf_preis }}</td>
+<td>{{ data.anzahl }}</td>
+<td>{{ data.total_preis }}</td>
+</tr>
                 {% endfor %}
                 <tr>
-                    <td colspan="3">Total Count:</td>
-                    <td>{{ models.total_amount }}</td>
-                    <td>{{ models.total_preis }}</td>
-                </tr>
+<td colspan="3">Total Count:</td>
+<td>{{ models.total_amount }}</td>
+<td>{{ models.total_preis }}</td>
+</tr>
             {% endfor %}
         </tbody>
-    </table>
-</body>
+</table>
+</body></div>
 </html>

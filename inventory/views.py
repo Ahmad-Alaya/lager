@@ -170,12 +170,12 @@ def verkaufliste(request):
 
 
         operation_mode = 'attachment'
-        if request.POST.get('anzeigen'):
+        if 'anzeigen' in request.POST:
             operation_mode = 'inline'
 
         verkauf_id = request.POST.get('verkauf_id')
 
-        if request.POST.get("anzeigen") or request.POST.get("herunterladen"):
+        if 'anzeigen' in request.POST or 'herunterladen' in request.POST:
             c,response = generate_pdf(verkauf_id, operation_mode)
             c.save()
             print("PDF saved successfully!")
