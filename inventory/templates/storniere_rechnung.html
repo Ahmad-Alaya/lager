@@ -1,0 +1,42 @@
+
+<form action="{% url 'storniere_rechnung' %}"  method="post">
+    {% csrf_token %}
+    <h2>Rechnung stornieren</h2>
+    <label for="StornoNummer">Rechnungsnummer eingeben:</label>
+    <input type="number" id="StornoNummer" name="storno_rechnung_nr">
+    <br>
+    <input type="submit" name="anzeigen" value="Anzeigen" />
+    {% if button == "anzeigen" %}
+    <div id="details">
+    <p>Kunde: {{ kunde }}</p>
+    <p>Summe: {{ preis }}</p>
+    <p>Artikel: {{ beschreibung1 }}</p>
+    {% if beschreibung2 %}
+        <p>2.Artikel {{ beschreibung2 }}</p>
+        <label for="arikel_nr">Welche Artikel möchten Sie Stornieren:</label>
+          <select name="arikel_nr" id="arikel_nr" required>
+            <option value="first">{{ beschreibung1 }}</option>
+            <option value="second">{{ beschreibung2 }}</option>
+            <option value="both">Alles</option>
+          </select>
+        <br>
+    {% endif %}
+    <label for="stornierungsdatum">Stornierungsdatum:</label>
+    <input type="date" id="stornierungsdatum" name="stornierungsdatum" required>
+    <br>
+    <label for="erstattung">Erstattung:</label>
+    <input type="number" id="erstattung" min="1" step="0.01" required>
+    <br>
+    <label for="zahlungsart">Zahlungsart:</label>
+    <select class="form-control" id="zahlungsart" name="zahlungsart" required="">
+    <option value="">None</option>
+    <option value="Bar">Bar</option>
+    <option value="Überweisung">Überweisung</option>
+    </select>
+    <br>
+    <button type="submit" name="rechnung_erstellen">Stornorechnung erstellen</button>
+    </div>
+    {% endif %}
+</form>
+
+

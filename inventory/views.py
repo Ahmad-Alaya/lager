@@ -48,6 +48,61 @@ def inventar_liste(request):
 
     return render(request, 'inventar_liste.html', context)
 
+
+@login_required
+def storniere_rechnung(request):
+    x = 1
+    if request.POST:
+        if "rechnung_erstellen" in request.POST:
+            button= "rechnung_erstellen"
+
+        else:
+            button = "anzeigen"
+        rechnung_nummer = int(request.POST.get("storno_rechnung_nr"))
+        rechnung = Verkauf.objects.get(rechnungs_nr=rechnung_nummer)
+        preis = rechnung.final_preis
+        kunde = rechnung.kunde_name
+        beschreibung1 = rechnung.beschreibung
+        beschreibung2 = rechnung.beschreibung2
+
+        if button=="rechnung_erstellen":
+            new_verkauf = Verkauf.objects.create(
+                verkäufer=request.user.username,
+                type_of=rechnung.type_of,
+                menge=rechnung.menge,
+                zustand=rechnung.zustand,
+                zusaetzlich=" ",
+                zahlungsart=request.POST.get("zahlungsart"),
+                verkaufsdatum=request.POST.get("stornierungsdatum"),
+                bezahlt="Ja",
+                zahlungsdatum=request.POST.get("stornierungsdatum"),
+                marke=rechnung.marke,
+                model=rechnung.model,
+                serial_number=rechnung.serial_number,
+                artikel_nr=rechnung.artikel_nr,
+                preis= -1 * float(request.POST.get("erstattung")),
+                beschreibung=rechnung.beschreibung,
+                kunde_name=rechnung.kunde_name,
+                kunde_plz=rechnung.kunde_plz,
+                kunde_city=rechnung.kunde_city,
+                kunde_email=rechnung.kunde_email,
+                kunde_mobile=rechnung.kunde_mobile,
+                kunde_strasse=rechnung.kunde_strasse,
+            )
+            new_rechnung_nr = new_verkauf.rechnungs_nr
+
+        context = {
+            "kunde":kunde,
+            "beschreibung1":beschreibung1,
+            "beschreibung2":beschreibung2,
+            "preis":preis,
+            "button": button
+        }
+        return render(request, 'storniere_rechnung.html', context)
+
+    return render(request, 'storniere_rechnung.html',{})
+
+
 @login_required
 def verkauf(request, id, type):
     type_maschine = None
