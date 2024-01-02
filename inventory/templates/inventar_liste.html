@@ -352,14 +352,5 @@
     });
 });
 
-    function openSmallWindow(event) {
-        var screenWidth = window.screen.width;
-        var screenHeight = window.screen.height;
-        var centerX = (screenWidth - 400) / 2;
-        var centerY = (screenHeight - 400) / 2;
-        var windowFeatures = 'width=400,height=400,left=' + centerX + ',top=' + centerY;
-
-        window.open(event.target.href, 'smallWindow', windowFeatures);
-    }
     </script>
 {% endblock %}

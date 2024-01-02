@@ -173,10 +173,6 @@ class Verkauf(models.Model):
 
     ]
 
-    # gerät = models.ForeignKey(Gerät, on_delete=models.SET_NULL, null=True, blank=True)
-    # waschmaschine = models.ForeignKey(Waschmaschine, on_delete=models.SET_NULL, null=True, blank=True)
-    # kuhlschrank = models.ForeignKey(Kuehlschrank, on_delete=models.SET_NULL, null=True, blank=True)
-    # spuelmaschine= models.ForeignKey(Spuelmaschine, on_delete=models.SET_NULL, null=True, blank= True)
     verkäufer = models.CharField(max_length=255)
     type_of = models.CharField(max_length=200, choices=TYPE_OF_CHOICES, verbose_name="Gerät")
     menge = models.IntegerField()
@@ -240,3 +236,34 @@ class Verkauf(models.Model):
         self.final_preis = self.calculate_final_preis()
         self.gewinn = self.calculate_gewinn()
         super(Verkauf, self).save(*args, **kwargs)
+
+
+class Storno(models.Model):
+    # Metainformation
+    zahlungsart = models.CharField(max_length=100, choices=ZAHLUNGSART_CHOICES, blank=True, null=True)
+    stornierungsdatum = models.DateTimeField(null=True, blank=True)
+    final_erstattung = models.DecimalField(max_digits=8, decimal_places=2) # final preis
+    stornierte_rechnung = models.IntegerField(null=True, blank=True)
+    nummer = models.IntegerField(unique=True)
+
+    # Kundeninformations
+    kunde_name = models.CharField(max_length=100, null=True, blank=True)
+    kunde_strasse = models.CharField(max_length=100, null=True, blank=True)
+    kunde_plz = models.CharField(max_length=100, null=True, blank=True)
+    kunde_city = models.CharField(max_length=100, null=True, blank=True)
+
+    # 1.Artikel
+    beschreibung1 = models.TextField(max_length=500, null=True, blank=True)
+    preis1 = models.DecimalField(max_digits=8, decimal_places=2)
+    erstattung1 = models.DecimalField(max_digits=8, decimal_places=2)
+    menge = models.IntegerField(null=True, blank=True)
+    artikel_nr = models.CharField(max_length=50, null=True, blank=True)
+
+    # 2.Artikel
+    beschreibung2 = models.TextField(max_length=500, null=True, blank=True)
+    preis2 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    erstattung2 = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    artikel_nr2 = models.CharField(max_length=50, null=True, blank=True)
+
+
+
