@@ -48,10 +48,10 @@
     <input type="text" id="artikel_nr" name="artikel_nr" value="{{ artikel_nr }}">
     <br>
     <label for="preis1">Verkaufter Preis 1: </label>
-    <input type="number" id="preis1" name="preis1" min="1" step="0.01" value="{{ preis1 }}">
+    <input type="number" id="preis1" name="preis1" min="0" step="0.01" value="{{ preis1 }}">
     <br>
     <label for="erstattung1">Erstattet vom 1.Artikel wird: </label>
-    <input type="number" id="erstattung1" name="erstattung1" value="{{ erstattung1 }}">
+    <input type="number" id="erstattung1" name="erstattung1" min="0" step="0.01" value="{{ erstattung1 }}">
     <br>
     </div>
 
@@ -66,10 +66,10 @@
         <input type="text" id="artikel_nr2" name="artikel_nr2" value="{{ artikel_nr2 }}">
         <br>
         <label for="preis2">Verkaufter Preis 2: </label>
-        <input type="number" id="preis2" name="preis2" value="{{ preis2 }}">
+        <input type="number" id="preis2" name="preis2" min="0" step="0.01" value="{{ preis2 }}">
         <br>
         <label for="erstattung2">Erstattet vom 2.Artikel wird: </label>
-        <input type="number" id="erstattung2" name="erstattung2" min="1" step="0.01" value="{{ erstattung2 }}">
+        <input type="number" id="erstattung2" name="erstattung2" min="0" step="0.01" value="{{ erstattung2 }}">
         <br>
 
     {% endif %}
@@ -81,7 +81,7 @@
     <input type="date" id="stornierungsdatum" name="stornierungsdatum">
     <br>
     <label for="final_erstattung">Gesamte erstattung:</label>
-    <input type="number" id="final_erstattung" min="1" step="0.01" name="final_erstattung">
+    <input type="number" id="final_erstattung" min="0" step="0.01" name="final_erstattung">
     <br>
     <label for="zahlungsart">Rückzahlungsart:</label>
     <select class="form-control" id="zahlungsart" name="zahlungsart">

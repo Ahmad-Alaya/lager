@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import pandas as pd
 import io
+from decouple import config
 
 @login_required
 def inventar_liste(request):
@@ -360,7 +361,7 @@ def send_email(request):
             reciver_mail = [kunde_email,'sarahhandel@web.de']
         else:
             reciver_mail = [kunde_email]
-        email_obj = EmailMessage(subject, message, 'sarahhandel@web.de', reciver_mail)
+        email_obj = EmailMessage(subject, message, config('EMAIL_HOST_USER'), reciver_mail)
         # witz :) ersetze erste param to 'Rechnung'
         email_obj.attach(pdf_response.headers._store.get('content-disposition')[1].split("=")[1], pdf_response.content, 'application/pdf')
         try:
@@ -385,14 +386,17 @@ def send_email(request):
         kunde_email = verkauf_obj.kunde_email
         if not kunde_email:
             kunde_email = " "
-        message = "Sehr geehrte Damen und Herren,\n\nwir hoffen, Sie hatten eine großartige Erfahrung beim Einkaufen bei uns.\n\n" \
+        message = "BITTE ANTWORTEN SIE NICHT AUF DIESE EMAIL\n" \
+                  "Sehr geehrte Damen und Herren,\n\nwir hoffen, Sie hatten eine großartige Erfahrung beim Einkaufen bei uns.\n\n" \
                   "Anbei finden Sie die Rechnung für Ihren Einkauf.\n\n" \
                   "Bitte zögern Sie nicht, sich bei uns zu melden, falls Sie Fragen oder Anmerkungen haben." \
                   " Wir stehen Ihnen gerne zur Verfügung, um Ihnen weiterzuhelfen.\n\n" \
                   "Wir freuen uns auf Ihre Bewertung und hoffen, Sie bald wieder bei uns begrüßen zu dürfen.\n\n" \
                   "https://maps.app.goo.gl/jgxZXcNxKi3G23M8A\n\n" \
                   "Mit freundlichen Grüßen\n" \
-                  "Sarahhandel UG"
+                  "Sarahhandel UG\n" \
+                  "für Rückfragen schreiben Sie uns bitte auf sarahhandel@web.de"
+
         subject = "Rechnung"
     context = {
         'subject': subject,
