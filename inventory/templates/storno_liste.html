@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% load static %}
+    <link href="/static/styles.css" rel="stylesheet"/>
+    <h1>Stornoliste</h1>
+
+    <style>
+        /* Success message style */
+        .message-success {
+            background-color: #209820;
+            color: white;
+        }
+
+        /* Error message style */
+        .message-error {
+            background-color: #ff7b7b;
+            color: white;
+        }
+
+        .bezahlt-color-ja {
+            background-color: #d0ffd0;
+        }
+
+        .bezahlt-color-nein {
+            background-color: #ff7b7b;
+        }
+
+        .bezahlt-color--- {
+            background-color: #ffff9b;
+        }
+
+    </style>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nr</th>
+            <th>Stornierungsdatum</th>
+            <th>Erstattung</th>
+            <th>Kunde</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for storno in storno_list|dictsortreversed:'stornierungsdatum' %}
+            <tr>
+                <form action="{% url 'storno_liste' %}" method="post">
+                    {% csrf_token %}
+
+                    <td>{{ storno.nummer }}</td>
+                    <td>{{ storno.stornierungsdatum }}</td>
+                    <td>{{ storno.final_erstattung }}</td>
+                    <td>{{ storno.kunde_name }}</td>
+
+
+                    <input name="storno_id" type="hidden" value="{{ storno.id }}"/>
+                    <td>
+                        <button name="herunterladen" type="submit" class="btn"><img src="../static/download.png"
+                                                                                    alt="Herunterladen" width="17"
+                                                                                    height="20"></button>
+                    </td>
+                    <td>
+                        <button name="anzeigen" type="submit" class="btn"><img src="../static/show.png"
+                                                                               alt="Herunterladen" width="17"
+                                                                               height="20"></button>
+                    </td>
+                    <td>
+                        <button class="btn" name="send_email" type="submit" value="send_email">
+                            <img src="{% static 'email.png' %}" alt="Email senden" width="17" height="20">
+                        </button>
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:inventory_storno_change' storno.id %}">
+                            <img src="{% static 'edit.png' %}" alt="bearbeiten" width="17" height="20">
+                        </a>
+                    </td>
+                    <td>
+                        <a class="delete-link" href="#"><img src="{% static 'trash.png' %}" alt="Delete" width="17"
+                                                             height="20"></a>
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- JavaScript code to show the confirmation message -->
+    <script>
+        const deleteLinks = document.querySelectorAll('.delete-link');
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Are you sure you want to delete this message? The selled object will be returned to your inventory.
+                const confirmation = confirm("Sorry but you can not delete an invoice yet");
+                if (confirmation) {
+                    // If user confirms, submit the form
+                    link.closest('form').submit();
+                }
+            });
+        });
+    </script>
+    <!-- JavaScript code to show the warning message -->
+
+    <script>
+        // Function to sort the table by the given column index
+        function sortTable(columnIndex) {
+            let table, rows, switching, i, x, y, shouldSwitch;
+            table = document.querySelector('table');
+            switching = true;
+
+            // Get the current sorting column index and direction
+            let currentSortIndex = parseInt(table.getAttribute('data-sort-index') || 0);
+            let sortOrder = table.getAttribute('data-sort-order') || 'asc';
+
+            // Determine if the user clicked on the same column
+            if (columnIndex === currentSortIndex) {
+                // Reverse the sorting order
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Set the new sorting column and default to ascending order
+                currentSortIndex = columnIndex;
+                sortOrder = 'asc';
+            }
+
+            // Update the sorting indicators
+            const headers = document.querySelectorAll('th');
+            headers.forEach((header, index) => {
+                header.classList.remove('asc', 'desc');
+                if (index === currentSortIndex) {
+                    header.classList.add(sortOrder);
+                }
+            });
+
+            table.setAttribute('data-sort-index', currentSortIndex);
+            table.setAttribute('data-sort-order', sortOrder);
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName('td')[columnIndex];
+                    y = rows[i + 1].getElementsByTagName('td')[columnIndex];
+
+                    if (sortOrder === 'asc') {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (sortOrder === 'desc') {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
+        // Attach event listeners to the table headers for sorting
+        document.querySelectorAll('th').forEach((header, index) => {
+            header.addEventListener('click', () => sortTable(index));
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
+
+            messages.forEach(message => {
+                // Check if the message has a success or error class
+                if (message.classList.contains('success')) {
+                    message.classList.add('message-success');
+                } else if (message.classList.contains('error')) {
+                    message.classList.add('message-error');
+                }
+
+                // Automatically remove messages after 5 seconds
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 1000); // Remove after fade-out animation duration
+                }, 5000); // 5 seconds
+            });
+        });
+
+
+    </script>
+
+{% endblock %}

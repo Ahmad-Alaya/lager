@@ -1,4 +1,7 @@
-
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link href="/static/styles.css" rel="stylesheet"/>
 <form action="{% url 'storniere_rechnung' %}"  method="post">
     {% csrf_token %}
     <h2>Rechnung stornieren</h2>
@@ -8,6 +11,15 @@
     <br>
 
     <h3> Kunden Information</h3><br>
+    {% if beschreibung2 %}
+        <label for="storno_fuer">Welche Artikel möchten Sie Stornieren:</label>
+          <select name="storno_fuer" id="storno_fuer" onchange="toggleArtikelFields()">
+            <option value="first">{{ beschreibung1 }}</option>
+            <option value="second">{{ beschreibung2 }}</option>
+            <option value="both">Beide</option>
+          </select>
+        <br>
+    {% endif %}
 
     <div id="details">
     <label for="kunde_name">kunde: </label>
@@ -23,6 +35,7 @@
     <input type="text" id="kunde_city" name="kunde_city" value="{{ kunde_city }}">
     <br>
 
+    <div id="artikel1">
     <h3> 1.Artikel</h3><br>
     <label for="beschreibung1">Beschreibung: </label>
     <textarea id="beschreibung1" name="beschreibung1" rows="4" cols="50">{{ beschreibung1 }}</textarea>
@@ -34,18 +47,19 @@
     <input type="text" id="artikel_nr" name="artikel_nr" value="{{ artikel_nr }}">
     <br>
     <label for="preis1">Verkaufter Preis 1: </label>
-    <input type="number" id="preis1" name="preis1" value="{{ preis1 }}">
+    <input type="number" id="preis1" name="preis1" min="1" step="0.01" value="{{ preis1 }}">
     <br>
     <label for="erstattung1">Erstattet vom 1.Artikel wird: </label>
     <input type="number" id="erstattung1" name="erstattung1" value="{{ erstattung1 }}">
     <br>
+    </div>
 
-
-
+    <div id="artikel2">
     {% if beschreibung2 %}
         <h3> 2.Artikel</h3><br>
+
         <label for="beschreibung2">2.Artikel: </label>
-        <textarea  id="beschreibung2" name="beschreibung2">{{ beschreibung2 }}</textarea>
+        <textarea  id="beschreibung2" name="beschreibung2" rows="4" cols="50">{{ beschreibung2 }}</textarea>
         <br>
         <label for="artikel_nr2">Artikel Nr2: </label>
         <input type="text" id="artikel_nr2" name="artikel_nr2" value="{{ artikel_nr2 }}">
@@ -54,17 +68,11 @@
         <input type="number" id="preis2" name="preis2" value="{{ preis2 }}">
         <br>
         <label for="erstattung2">Erstattet vom 2.Artikel wird: </label>
-        <input type="number" id="erstattung2" name="erstattung2" value="{{ erstattung2 }}">
+        <input type="number" id="erstattung2" name="erstattung2" min="1" step="0.01" value="{{ erstattung2 }}">
         <br>
 
-        <label for="arikel_nr">Welche Artikel möchten Sie Stornieren:</label>
-          <select name="arikel_nr" id="arikel_nr">
-            <option value="first">{{ beschreibung1 }}</option>
-            <option value="second">{{ beschreibung2 }}</option>
-            <option value="both">Beide</option>
-          </select>
-        <br>
     {% endif %}
+    </div>
 
     <h3>Information</h3><br>
 
@@ -74,7 +82,7 @@
     <label for="final_erstattung">Gesamte erstattung:</label>
     <input type="number" id="final_erstattung" min="1" step="0.01" name="final_erstattung">
     <br>
-    <label for="zahlungsart">Zahlungsart:</label>
+    <label for="zahlungsart">Rückzahlungsart:</label>
     <select class="form-control" id="zahlungsart" name="zahlungsart">
     <option value="">None</option>
     <option value="Bar">Bar</option>
@@ -88,5 +96,51 @@
     </div>
 
 </form>
+<script>
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Add event listeners to update final_erstattung when erstattung1 or erstattung2 changes
+    var erstattung1Input = document.getElementById("erstattung1");
+    var erstattung2Input = document.getElementById("erstattung2");
+    var finalErstattungInput = document.getElementById("final_erstattung");
 
+    erstattung1Input.addEventListener("input", updateFinalErstattung);
+    erstattung2Input.addEventListener("input", updateFinalErstattung);
+
+    function updateFinalErstattung() {
+      var erstattung1 = parseFloat(erstattung1Input.value) || 0;
+      var erstattung2 = parseFloat(erstattung2Input.value) || 0;
+      var sumErstattung = erstattung1 + erstattung2;
+      finalErstattungInput.value = sumErstattung.toFixed(2);
+    }
+
+    // Initial update when the page loads
+    updateFinalErstattung();
+  });
+
+function toggleArtikelFields() {
+      var stornoFuerSelect = document.getElementById("storno_fuer");
+      var artikel1Div = document.getElementById("artikel1");
+      var artikel2Div = document.getElementById("artikel2");
+      var erstattung1Input = document.getElementById("erstattung1");
+      var erstattung2Input = document.getElementById("erstattung2");
+
+      if (stornoFuerSelect.value === "first") {
+        // If 'first' is selected, hide Artikel 2 and set erstattung2 to 0
+        artikel2Div.style.display = "none";
+        artikel1Div.style.display = "block";
+        erstattung2Input.value = 0;
+      } else if (stornoFuerSelect.value === "second") {
+        // If 'second' is selected, hide Artikel 1 and set erstattung1 to 0
+        artikel1Div.style.display = "none";
+        artikel2Div.style.display = "block";
+        erstattung1Input.value = 0;
+      } else {
+        // If 'both' is selected, show both Artikel 1 and Artikel 2
+        artikel1Div.style.display = "block";
+        artikel2Div.style.display = "block";
+      }
+
+    }
+</script>
+{% endblock %}
