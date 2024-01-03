@@ -53,9 +53,76 @@ def inventar_liste(request):
 def storniere_rechnung(request):
     if request.POST:
         if "rechnung_erstellen" in request.POST:
-            c,response = generate_storno_pdf(request.POST)
+            nummer = Storno.objects.aggregate(Max('nummer'))['nummer__max']
+            if not nummer: # for the first time
+                nummer = 0
+            # nummer +=1 todo
+            second_obj = False
+
+            beschreibung1 = request.POST.get("beschreibung1"),
+            preis1 = float(request.POST.get("preis1")),
+            erstattung1 = float(request.POST.get("erstattung1")),
+            menge = float(request.POST.get("menge"))
+            artikel_nr = request.POST.get("artikel_nr")
+
+            if request.POST.get("storno_fuer") == "second":
+                beschreibung1 = request.POST.get("beschreibung2"),
+                preis1 = float(request.POST.get("preis2")),
+                erstattung1 = float(request.POST.get("erstattung2")),
+                artikel_nr = request.POST.get("artikel_nr2")
+
+            elif request.POST.get("storno_fuer") == "both":
+                second_obj = True
+
+            if isinstance(erstattung1, tuple):
+                erstattung1 = list(erstattung1)[0]
+
+            if isinstance(preis1, tuple):
+                preis1 = list(preis1)[0]
+            if isinstance(beschreibung1, tuple):
+                beschreibung1 = list(beschreibung1)[0]
+
+            storno_obj = Storno.objects.create(
+                zahlungsart=request.POST.get("zahlungsart"),
+                stornierungsdatum=request.POST.get("stornierungsdatum"),
+                final_erstattung=float(request.POST.get("final_erstattung")),
+                stornierte_rechnung=request.POST.get("stornierte_rechnung"),
+                nummer=nummer + 1,
+
+                kunde_name=request.POST.get("kunde_name"),
+                kunde_strasse=request.POST.get("kunde_strasse"),
+                kunde_plz=request.POST.get("kunde_plz"),
+                kunde_city=request.POST.get("kunde_city"),
+
+                beschreibung1=beschreibung1,
+                preis1=float(preis1),
+                erstattung1=float(erstattung1),
+                menge=float(menge),
+                artikel_nr=artikel_nr
+
+            )
+            if second_obj:
+                beschreibung2 = request.POST.get("beschreibung2")
+                preis2 = float(request.POST.get("preis2"))
+                erstattung2 = float(request.POST.get("erstattung2"))
+
+                storno_obj.beschreibung2 = beschreibung2,
+                storno_obj.preis2 = preis2,
+                storno_obj.erstattung2 = erstattung2,
+                storno_obj.artikel_nr2 = request.POST.get("artikel_nr2")
+
+                if isinstance(storno_obj.erstattung2, tuple):
+                    storno_obj.erstattung2 = list(storno_obj.erstattung2)[0]
+
+                if isinstance(storno_obj.beschreibung2, tuple):
+                    storno_obj.beschreibung2 = list(storno_obj.beschreibung2)[0]
+
+                if isinstance(storno_obj.preis2, tuple):
+                    storno_obj.preis2 = list(storno_obj.preis2)[0]
+                storno_obj.save()
+            c,response = generate_storno_pdf(storno_obj.id, operation_mode='inline')
             c.save()
-            return response
+            return redirect("storno_liste")
 
         rechnung_nummer = int(request.POST.get("storno_rechnung_nr"))
         rechnung = Verkauf.objects.get(rechnungs_nr=rechnung_nummer)
@@ -255,16 +322,13 @@ def verkaufliste(request):
 def stornoliste(request):
 
     if request.POST:
-
         operation_mode = 'attachment'
         if 'anzeigen' in request.POST:
             operation_mode = 'inline'
-
         storno_id = request.POST.get('storno_id')
 
         if 'anzeigen' in request.POST or 'herunterladen' in request.POST:
-            obj = Storno.objects.get(id=request.POST.get("storno_id"))
-            c,response = generate_storno_pdf(obj.__dict__)
+            c,response = generate_storno_pdf(request.POST.get("storno_id"), operation_mode)
             c.save()
             print("PDF saved successfully!")
             return response
@@ -462,53 +526,11 @@ def inventar_rechner(request):
                }
     return render(request, 'inventar_rechner.html', context)
 
-def generate_storno_pdf(obj:dict):
-    nummer = Storno.objects.aggregate(Max('nummer'))['nummer__max']
-    if not nummer:
-        nummer = 0
+def generate_storno_pdf(id:int, operation_mode: str = 'attachment'):
+    storno_obj = Storno.objects.get(id=id)
     second_obj = False
-
-    beschreibung1 = obj.get("beschreibung1"),
-    preis1 = float(obj.get("preis1")),
-    erstattung1 = float(obj.get("erstattung1")),
-    menge = float(obj.get("menge"))
-    artikel_nr = obj.get("artikel_nr")
-
-    if obj.get("storno_fuer") == "second":
-        beschreibung1 = obj.get("beschreibung2"),
-        preis1 = float(obj.get("preis2")),
-        erstattung1 = float(obj.get("erstattung2")),
-        artikel_nr = obj.get("artikel_nr2")
-
-    elif obj.get("storno_fuer") == "both":
+    if storno_obj.beschreibung2:
         second_obj = True
-
-
-    storno_obj = Storno.objects.create(
-        zahlungsart=obj.get("zahlungsart"),
-        stornierungsdatum=obj.get("stornierungsdatum"),
-        final_erstattung=float(obj.get("final_erstattung")),
-        stornierte_rechnung=obj.get("stornierte_rechnung"),
-        nummer=nummer+1,
-
-        kunde_name=obj.get("kunde_name"),
-        kunde_strasse=obj.get("kunde_strasse"),
-        kunde_plz=obj.get("kunde_plz"),
-        kunde_city=obj.get("kunde_city"),
-
-        beschreibung1=beschreibung1,
-        preis1=float(preis1[0]),
-        erstattung1=float(erstattung1[0]),
-        menge=float(menge),
-        artikel_nr=artikel_nr
-
-    )
-    if second_obj:
-        storno_obj.beschreibung2 = obj.get("beschreibung2"),
-        storno_obj.preis2 = float(obj.get("preis2")),
-        storno_obj.erstattung2 = float(obj.get("erstattung2")),
-        storno_obj.artikel_nr2 = obj.get("artikel_nr2")
-
 
     buyer_name = storno_obj.kunde_name
     buyer_street =storno_obj.kunde_strasse
@@ -524,37 +546,28 @@ def generate_storno_pdf(obj:dict):
     menge = storno_obj.menge
     artikel_nr = storno_obj.artikel_nr
 
-    einzel_preis, einzel_preis_german = _two_decimal_german((-1*storno_obj.erstattung1) / 1.19)
-    end_preis, end_preis_german = _two_decimal_german(-1*storno_obj.erstattung1)
+    einzel_preis, einzel_preis_german = _two_decimal_german((-1*float(storno_obj.erstattung1)) / 1.19)
+    end_preis, end_preis_german = _two_decimal_german(-1*float(storno_obj.erstattung1))
 
     if second_obj:
         beschreibung2 = storno_obj.beschreibung2
         artikel_nr2 = storno_obj.artikel_nr2
 
         if isinstance(storno_obj.erstattung2, tuple):
-            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1*storno_obj.erstattung2[0]) / 1.19)
-            end_preis2, end_preis_german2 = _two_decimal_german(-1* storno_obj.erstattung2[0])
+            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1*float(storno_obj.erstattung2[0])) / 1.19)
+            end_preis2, end_preis_german2 = _two_decimal_german(-1* float(storno_obj.erstattung2[0]))
         else:
-            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1 * storno_obj.erstattung2) / 1.19)
-            end_preis2, end_preis_german2 = _two_decimal_german(-1 * storno_obj.erstattung2)
+            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1 * float(storno_obj.erstattung2)) / 1.19)
+            end_preis2, end_preis_german2 = _two_decimal_german(-1 * float(storno_obj.erstattung2))
 
 
         sum_einzel_preis, sum_einzel_preis_german = _two_decimal_german(einzel_preis + einzel_preis2)
         sum_end_preis, sum_end_preis_german = _two_decimal_german(end_preis + end_preis2)
 
-    try:
-        beschreibung1 = list(beschreibung1)
-        beschreibung1[0] = beschreibung1[0].replace("(","")
-        beschreibung1[0] = beschreibung1[0].replace(")", "")
-        beschreibung1[0] = beschreibung1[0].replace("\'", "")
-        beschreibung1[0] = beschreibung1[0].replace(",", "")
-    except:
-        pass
-
     # Create PDF
-    file_name = "Stornorechnung" + str(nummer+1) + ".pdf"
+    file_name = "Stornorechnung" + str(storno_obj.nummer) + ".pdf"
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename={file_name}'
+    response['Content-Disposition'] = f'{operation_mode}; filename={file_name}'
 
     # pdf_name = f"{os.getcwd()}/invoice.pdf"
     c = canvas.Canvas(response, pagesize=letter)
@@ -594,7 +607,7 @@ def generate_storno_pdf(obj:dict):
     #
     # # Add invoice number and date
     # c.setFont("Helvetica-Bold", 14)
-    c.drawString(393, 628, f"Stornonummer            : St-{nummer+1}")
+    c.drawString(393, 628, f"Stornonummer            : St-{storno_obj.nummer}")
     c.drawString(394, 616, f"Stornierungsdatum     : {stornierungsdatum}")
     c.drawString(394, 604, f"Stornierterechnung     : {stornierte_rechnung}")
     c.drawString(393, 592, f"Zahlungsart                 : {zahlungsart}")
@@ -604,13 +617,13 @@ def generate_storno_pdf(obj:dict):
     if second_obj:
         data = [
             ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
-            [beschreibung1[0], f"{int(menge)} Stk", artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
-            [beschreibung2[0], f"{1} Stk", artikel_nr2, f"{einzel_preis_german2}€", "19,00 %", f"{end_preis_german2}€"],
+            [beschreibung1, f"{int(menge)} Stk", artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
+            [beschreibung2, f"{1} Stk", artikel_nr2, f"{einzel_preis_german2}€", "19,00 %", f"{end_preis_german2}€"],
         ]
     else:
         data = [
             ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
-            [beschreibung1[0], f"{menge} Stk",
+            [beschreibung1, f"{menge} Stk",
              artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
         ]
 
@@ -650,7 +663,7 @@ def generate_storno_pdf(obj:dict):
 
     neunzehn_prozent, neunzehn_prozent_german = _two_decimal_german(end_preis - einzel_preis)
 
-    if second_obj: #todo
+    if second_obj:
         neunzehn_prozent2, neunzehn_prozent_german2 = _two_decimal_german(end_preis2 - einzel_preis2)
         sum_neunzehn_prozent, sum_neunzehn_prozent_german = _two_decimal_german(neunzehn_prozent + neunzehn_prozent2)
 
@@ -660,7 +673,7 @@ def generate_storno_pdf(obj:dict):
     c.drawRightString(500, 326, "19% USt.:")
 
     c.drawRightString(500, 312, "Gesamt (brutto):")
-    if second_obj: #todo
+    if second_obj:
         c.drawRightString(590, 340, f"{sum_einzel_preis_german} €")
         c.drawRightString(590, 326, f"{sum_neunzehn_prozent_german} €")
         c.drawRightString(590, 312, f"{sum_end_preis_german} €")

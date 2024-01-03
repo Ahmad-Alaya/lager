@@ -14,6 +14,7 @@
     {% if beschreibung2 %}
         <label for="storno_fuer">Welche Artikel möchten Sie Stornieren:</label>
           <select name="storno_fuer" id="storno_fuer" onchange="toggleArtikelFields()">
+            <option value="">Select one--</option>
             <option value="first">{{ beschreibung1 }}</option>
             <option value="second">{{ beschreibung2 }}</option>
             <option value="both">Beide</option>
