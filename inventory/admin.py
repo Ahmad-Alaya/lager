@@ -50,6 +50,10 @@ class VerkaufAdmin(admin.ModelAdmin):
     list_display = ['marke', 'rechnungs_nr', 'verkaufsdatum', 'preis', 'kunde_name']
 
 
+class StornoAdmin(admin.ModelAdmin):
+    search_fields = ['nummer','stornierungsdatum', 'final_erstattung', 'kunde_name']
+    list_display = ['nummer', 'stornierungsdatum', 'final_erstattung', 'kunde_name']
+
 # Register your models here.
 # admin.site.register(Gerät)
 admin.site.register(Verkauf,VerkaufAdmin)
@@ -63,3 +67,4 @@ admin.site.register(Backofen,BackofenAdmin)
 admin.site.register(Trockner,TrocknerAdmin)
 admin.site.register(Abzughaube,AbzughaubeAdmin)
 admin.site.register(Sonst,SonstAdmin)
+admin.site.register(Storno, StornoAdmin)

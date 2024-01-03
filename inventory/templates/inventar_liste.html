@@ -23,9 +23,32 @@
             border: 1px solid #ccc;
         }
 
+        .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .columnLeft {
+            flex: 1;
+        }
+
+        .columnRight {
+            margin-left: auto;
+            padding-bottom: 8px;
+        }
+
+
+
     </style>
 
-    <h1>Neue Rechnung erstellen</h1>
+    <div class="row">
+    <div class="columnLeft"><h1>Neue Rechnung erstellen</h1></div>
+    <div class="columnRight">
+        <p><a href="{% url 'storniere_rechnung' %}" class="btn" onclick="openSmallWindow(event)">Stornieren</a></p>
+    </div>
+    </div>
+
     <div class="form-control">
         <label for="auswahlGeraet">Choose a machine:</label>
         <select id="auswahlGeraet" name="maschine">

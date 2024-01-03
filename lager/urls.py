@@ -18,15 +18,17 @@ Including another URLconf
 
 from django.urls import path
 from django.contrib import admin
-from inventory.views import inventar_liste, verkauf, verkaufliste, send_email, statistic
+from inventory.views import inventar_liste, verkauf, verkaufliste, send_email, statistic, storniere_rechnung, stornoliste
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', inventar_liste, name='inventar_liste'),
     path('verkauf/<int:id>/<str:type>/', verkauf, name='verkauf'),
     path('verkauf_liste/', verkaufliste, name='verkauf_liste'),
+    path('storno_liste/', stornoliste, name='storno_liste'),
     path('send-email/', send_email, name='send_email'),
-    path('statistic/', statistic, name="statistic")
+    path('statistic/', statistic, name="statistic"),
+    path('storniere-rechnung/', storniere_rechnung, name='storniere_rechnung'),
 
 ]
 

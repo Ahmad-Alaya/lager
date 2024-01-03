@@ -48,6 +48,118 @@ def inventar_liste(request):
 
     return render(request, 'inventar_liste.html', context)
 
+
+@login_required
+def storniere_rechnung(request):
+    if request.POST:
+        if "rechnung_erstellen" in request.POST:
+            nummer = Storno.objects.aggregate(Max('nummer'))['nummer__max']
+            if not nummer: # for the first time
+                nummer = 0
+            # nummer +=1 todo
+            second_obj = False
+
+            beschreibung1 = request.POST.get("beschreibung1"),
+            preis1 = float(request.POST.get("preis1")),
+            erstattung1 = float(request.POST.get("erstattung1")),
+            menge = float(request.POST.get("menge"))
+            artikel_nr = request.POST.get("artikel_nr")
+
+            if request.POST.get("storno_fuer") == "second":
+                beschreibung1 = request.POST.get("beschreibung2"),
+                preis1 = float(request.POST.get("preis2")),
+                erstattung1 = float(request.POST.get("erstattung2")),
+                artikel_nr = request.POST.get("artikel_nr2")
+
+            elif request.POST.get("storno_fuer") == "both":
+                second_obj = True
+
+            if isinstance(erstattung1, tuple):
+                erstattung1 = list(erstattung1)[0]
+
+            if isinstance(preis1, tuple):
+                preis1 = list(preis1)[0]
+            if isinstance(beschreibung1, tuple):
+                beschreibung1 = list(beschreibung1)[0]
+
+            storno_obj = Storno.objects.create(
+                zahlungsart=request.POST.get("zahlungsart"),
+                stornierungsdatum=request.POST.get("stornierungsdatum"),
+                final_erstattung=float(request.POST.get("final_erstattung")),
+                stornierte_rechnung=request.POST.get("stornierte_rechnung"),
+                nummer=nummer + 1,
+
+                kunde_name=request.POST.get("kunde_name"),
+                kunde_strasse=request.POST.get("kunde_strasse"),
+                kunde_plz=request.POST.get("kunde_plz"),
+                kunde_city=request.POST.get("kunde_city"),
+
+                beschreibung1=beschreibung1,
+                preis1=float(preis1),
+                erstattung1=float(erstattung1),
+                menge=float(menge),
+                artikel_nr=artikel_nr
+
+            )
+            if second_obj:
+                beschreibung2 = request.POST.get("beschreibung2")
+                preis2 = float(request.POST.get("preis2"))
+                erstattung2 = float(request.POST.get("erstattung2"))
+
+                storno_obj.beschreibung2 = beschreibung2,
+                storno_obj.preis2 = preis2,
+                storno_obj.erstattung2 = erstattung2,
+                storno_obj.artikel_nr2 = request.POST.get("artikel_nr2")
+
+                if isinstance(storno_obj.erstattung2, tuple):
+                    storno_obj.erstattung2 = list(storno_obj.erstattung2)[0]
+
+                if isinstance(storno_obj.beschreibung2, tuple):
+                    storno_obj.beschreibung2 = list(storno_obj.beschreibung2)[0]
+
+                if isinstance(storno_obj.preis2, tuple):
+                    storno_obj.preis2 = list(storno_obj.preis2)[0]
+                storno_obj.save()
+            c,response = generate_storno_pdf(storno_obj.id, operation_mode='inline')
+            c.save()
+            return redirect("storno_liste")
+
+        rechnung_nummer = int(request.POST.get("storno_rechnung_nr"))
+        rechnung = Verkauf.objects.get(rechnungs_nr=rechnung_nummer)
+        final_erstattung = rechnung.final_preis
+        kunde_name = rechnung.kunde_name
+        kunde_city = rechnung.kunde_city
+        kunde_strasse = rechnung.kunde_strasse
+        kunde_plz = rechnung.kunde_plz
+        beschreibung1 = rechnung.beschreibung
+        preis1 = rechnung.preis
+        menge = rechnung.menge
+        artikel_nr = rechnung.artikel_nr
+        beschreibung2 = rechnung.beschreibung2
+        preis2 = rechnung.preis2
+        artikel_nr2 = rechnung.artikel_nr2
+
+
+        context = {
+            "rechnung_nummer": rechnung_nummer,
+            "final_erstattung": final_erstattung,
+            "kunde_name": kunde_name,
+            "kunde_city": kunde_city,
+            "kunde_strasse": kunde_strasse,
+            "kunde_plz": kunde_plz,
+            "beschreibung1": beschreibung1,
+            "preis1": preis1,
+            "menge": menge,
+            "artikel_nr": artikel_nr,
+            "beschreibung2": beschreibung2,
+            "preis2": preis2,
+            "artikel_nr2": artikel_nr2,
+        }
+        return render(request, 'storniere_rechnung.html', context)
+
+    return render(request, 'storniere_rechnung.html',{})
+
+
 @login_required
 def verkauf(request, id, type):
     type_maschine = None
@@ -204,6 +316,31 @@ def verkaufliste(request):
 
     verkauf_list = Verkauf.objects.all()
     return render(request, 'verkauf_liste.html', {'verkauf_list': verkauf_list})
+
+
+@login_required
+def stornoliste(request):
+
+    if request.POST:
+        operation_mode = 'attachment'
+        if 'anzeigen' in request.POST:
+            operation_mode = 'inline'
+        storno_id = request.POST.get('storno_id')
+
+        if 'anzeigen' in request.POST or 'herunterladen' in request.POST:
+            c,response = generate_storno_pdf(request.POST.get("storno_id"), operation_mode)
+            c.save()
+            print("PDF saved successfully!")
+            return response
+
+        if request.POST.get("send_email"):
+            request.session['storno_id'] = storno_id
+            return redirect("send_email")
+
+
+
+    storno_list = Storno.objects.all()
+    return render(request, 'storno_liste.html', {'storno_list': storno_list})
 
 @login_required
 def send_email(request):
@@ -388,6 +525,181 @@ def inventar_rechner(request):
                'missing_data': missing_data,
                }
     return render(request, 'inventar_rechner.html', context)
+
+def generate_storno_pdf(id:int, operation_mode: str = 'attachment'):
+    storno_obj = Storno.objects.get(id=id)
+    second_obj = False
+    if storno_obj.beschreibung2:
+        second_obj = True
+
+    buyer_name = storno_obj.kunde_name
+    buyer_street =storno_obj.kunde_strasse
+    buyer_city =storno_obj.kunde_city
+    buyer_zip =storno_obj.kunde_plz
+    stornierungsdatum = storno_obj.stornierungsdatum
+    if isinstance(stornierungsdatum, str):
+        stornierungsdatum = datetime.strptime(stornierungsdatum, '%Y-%m-%d')
+    stornierungsdatum = stornierungsdatum.strftime('%d.%m.%Y')
+    stornierte_rechnung = storno_obj.stornierte_rechnung
+    zahlungsart = storno_obj.zahlungsart
+    beschreibung1 = storno_obj.beschreibung1
+    menge = storno_obj.menge
+    artikel_nr = storno_obj.artikel_nr
+
+    einzel_preis, einzel_preis_german = _two_decimal_german((-1*float(storno_obj.erstattung1)) / 1.19)
+    end_preis, end_preis_german = _two_decimal_german(-1*float(storno_obj.erstattung1))
+
+    if second_obj:
+        beschreibung2 = storno_obj.beschreibung2
+        artikel_nr2 = storno_obj.artikel_nr2
+
+        if isinstance(storno_obj.erstattung2, tuple):
+            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1*float(storno_obj.erstattung2[0])) / 1.19)
+            end_preis2, end_preis_german2 = _two_decimal_german(-1* float(storno_obj.erstattung2[0]))
+        else:
+            einzel_preis2, einzel_preis_german2 = _two_decimal_german((-1 * float(storno_obj.erstattung2)) / 1.19)
+            end_preis2, end_preis_german2 = _two_decimal_german(-1 * float(storno_obj.erstattung2))
+
+
+        sum_einzel_preis, sum_einzel_preis_german = _two_decimal_german(einzel_preis + einzel_preis2)
+        sum_end_preis, sum_end_preis_german = _two_decimal_german(end_preis + end_preis2)
+
+    # Create PDF
+    file_name = "Stornorechnung" + str(storno_obj.nummer) + ".pdf"
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'{operation_mode}; filename={file_name}'
+
+    # pdf_name = f"{os.getcwd()}/invoice.pdf"
+    c = canvas.Canvas(response, pagesize=letter)
+
+    logo_path = f"{os.getcwd()}/lager/logo.png"
+    try:
+        c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+    except:
+        logo_path = f"{os.getcwd()}/logo.png"
+        c.drawImage(logo_path, 440, 640, width=2 * inch, height=2 * inch)
+
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(45, 720, "Sarah Handel UG")
+    c.setFont("Helvetica", 10)
+    c.drawString(45, 698, "Dr. Maher Hababa")
+    c.drawString(45, 684, "Carl-Troll-Straße 65, 53115 Bonn")
+    #
+    # # Add buyer information
+    if not buyer_name:
+        buyer_name = 'Bonn Kunde'
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(45, 578, buyer_name)
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(23, 460, "Stornorechnung")
+    c.setFont("Helvetica", 10)
+    # c.drawString(23, 445, zusaetzlich)
+
+    if not buyer_street:
+        buyer_street = ' '
+    c.drawString(45, 564, buyer_street)
+    if not buyer_city:
+        buyer_city = ' '
+    if not buyer_zip:
+        buyer_zip = ' '
+    adress = buyer_zip + ' ' + buyer_city
+    c.drawString(45, 550, adress)
+    #
+    # # Add invoice number and date
+    # c.setFont("Helvetica-Bold", 14)
+    c.drawString(393, 628, f"Stornonummer            : St-{storno_obj.nummer}")
+    c.drawString(394, 616, f"Stornierungsdatum     : {stornierungsdatum}")
+    c.drawString(394, 604, f"Stornierterechnung     : {stornierte_rechnung}")
+    c.drawString(393, 592, f"Zahlungsart                 : {zahlungsart}")
+    #
+    # # Define the table data and its specifications
+    # if two object are available
+    if second_obj:
+        data = [
+            ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
+            [beschreibung1, f"{int(menge)} Stk", artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
+            [beschreibung2, f"{1} Stk", artikel_nr2, f"{einzel_preis_german2}€", "19,00 %", f"{end_preis_german2}€"],
+        ]
+    else:
+        data = [
+            ["Beschreibung", "Menge", "Artikel-Nr", "Einzelpreis", "USt. %", "Betrag"],
+            [beschreibung1, f"{menge} Stk",
+             artikel_nr, f"{einzel_preis_german}€", "19,00 %", f"{end_preis_german}€"],
+        ]
+
+    story = []
+    t = Table(data, colWidths=[312, 40, 55, 58, 55, 50])
+
+    # Add table styles
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), '#0b5bb4'),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),  # added VALIGN attribute
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), "#cfe5f2"),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 1), (-1, -1), 'MIDDLE'),  # added VALIGN attribute
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+    ])
+
+    # Apply table style and draw the table
+    t.setStyle(style)
+    story.append(t)
+    # Get table height and width
+    table_width, table_height = t.wrap(0, 0)
+
+    # Draw table on canvas
+    x = (c._pagesize[0] - table_width) / 2
+    y = (c._pagesize[1] - table_height) / 2
+    t.drawOn(c, x, y)
+
+    # draw a line between the table and the total amount
+
+    neunzehn_prozent, neunzehn_prozent_german = _two_decimal_german(end_preis - einzel_preis)
+
+    if second_obj:
+        neunzehn_prozent2, neunzehn_prozent_german2 = _two_decimal_german(end_preis2 - einzel_preis2)
+        sum_neunzehn_prozent, sum_neunzehn_prozent_german = _two_decimal_german(neunzehn_prozent + neunzehn_prozent2)
+
+    # Draw total amount
+    c.setFont("Helvetica-Bold", 10)
+    c.drawRightString(500, 340, "Gesamt (netto):")
+    c.drawRightString(500, 326, "19% USt.:")
+
+    c.drawRightString(500, 312, "Gesamt (brutto):")
+    if second_obj:
+        c.drawRightString(590, 340, f"{sum_einzel_preis_german} €")
+        c.drawRightString(590, 326, f"{sum_neunzehn_prozent_german} €")
+        c.drawRightString(590, 312, f"{sum_end_preis_german} €")
+    else:
+        c.drawRightString(590, 340, f"{einzel_preis_german} €")
+        c.drawRightString(590, 326, f"{neunzehn_prozent_german} €")
+        c.drawRightString(590, 312, f"{end_preis_german} €")
+
+    # draw a line obve the payment information
+    c.line(45, 66, 585, 66)
+    # Draw payment information
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(45, 54, "Zahlungsinformationen:")
+    c.setFont("Helvetica", 10)
+    c.drawString(45, 42, "Bank: Kreissparkasse Köln")
+    c.drawString(45, 30, "IBAN: DE43 3705 0299 0046 0246 84")
+    c.drawString(45, 18, "BIC: COKSDE33XXX")
+
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(400, 54, "Kontaktinformation:")
+    c.setFont("Helvetica", 10)
+    c.drawString(400, 42, "E-Mail: sarahhandel@web.de")
+    c.drawString(400, 30, "Mobile: 015736622934")
+    c.drawString(400, 18, "Adresse: Carl-Troll-Str. 65, 53115 Bonn")
+    return c, response
+
 
 
 def generate_pdf(verkauf_id, operation_mode: str = 'attachment'):
