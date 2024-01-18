@@ -387,7 +387,7 @@ def send_email(request):
         if not kunde_email:
             kunde_email = " "
         message = "BITTE ANTWORTEN SIE NICHT AUF DIESE EMAIL\n" \
-                  "Sehr geehrte Damen und Herren,\n\nwir hoffen, Sie hatten eine großartige Erfahrung beim Einkaufen bei uns.\n\n" \
+                  "Sehr geehrte Damen und Herren,\n\nvielen Dank für Ihren Einkauf.\n\n" \
                   "Anbei finden Sie die Rechnung für Ihren Einkauf.\n\n" \
                   "Bitte zögern Sie nicht, sich bei uns zu melden, falls Sie Fragen oder Anmerkungen haben." \
                   " Wir stehen Ihnen gerne zur Verfügung, um Ihnen weiterzuhelfen.\n\n" \
@@ -511,7 +511,8 @@ def inventar_rechner(request):
                                                              'anzahl': anzahl,
                                                              'total_preis': float(kauf_preis) * float(anzahl)}
             else:
-                missing_data.append((Kategorie.model._meta.model_name, model_name, obj))
+                link = f"/admin/inventory/{Kategorie.model._meta.model_name}/{obj.id}/change/"
+                missing_data.append((Kategorie.model._meta.model_name, model_name, obj, link))
 
     total_all_total_preis = 0
     total_all_total_amount = 0
