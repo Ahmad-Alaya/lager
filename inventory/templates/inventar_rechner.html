@@ -1,5 +1,7 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
+{% block content %}
+<!DOCTYPE html>
 <html>
 <head>
 <title>Statistics</title>
@@ -48,7 +50,7 @@
 </thead>
 <tbody>
 <p>Diese Ware haben noch kein Kaufpreis: </p>
-<p>{{ missing_data }}</p>
+<p style="color: #f10808" >{{ missing_data }}</p>
 
             {% for category, models in statistic_dict.items %}
                 <tr>
@@ -72,3 +74,4 @@
 </table>
 </body></div>
 </html>
+{% endblock %}

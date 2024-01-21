@@ -18,7 +18,7 @@ Including another URLconf
 
 from django.urls import path
 from django.contrib import admin
-from inventory.views import inventar_liste, verkauf, verkaufliste, send_email, statistic, storniere_rechnung, stornoliste
+from inventory.views import inventar_liste, verkauf, verkaufliste, send_email, statistic, storniere_rechnung, stornoliste, inventar_rechner
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +29,8 @@ urlpatterns = [
     path('send-email/', send_email, name='send_email'),
     path('statistic/', statistic, name="statistic"),
     path('storniere-rechnung/', storniere_rechnung, name='storniere_rechnung'),
+    path('inventar_rechner/', inventar_rechner, name='inventar_rechner'),
+
 
 ]
 
